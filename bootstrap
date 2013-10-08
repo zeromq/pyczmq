@@ -1,0 +1,3 @@
+virtualenv .virt --distribute
+. .virt/bin/activate
+python setup.py develop
