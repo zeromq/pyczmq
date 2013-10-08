@@ -1,5 +1,5 @@
 import new
-from pyczmq import _cffi, zctx, zsocket, zstr, zsockopt
+from pyczmq import _cffi, zctx, zsocket, zstr, zsockopt, zbeacon, zloop
 
 
 class Socket(object):
@@ -58,3 +58,9 @@ class Loop(object):
     def poller(self, item, handler, arg=None):
         callback = _cffi.ffi.callback('zloop_fn', handler)
         zloop.poller(self.loop, item, callback, arg)
+
+
+class Beacon(object):
+    
+    def __init__(self):
+        self.loop = zbeacon.new()
