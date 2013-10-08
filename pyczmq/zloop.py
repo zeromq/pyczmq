@@ -1,4 +1,4 @@
-from pyczmq._cffi import ffi, C, ptop, nullable
+from pyczmq._cffi import ffi, C, ptop
 
 ffi.cdef('''
 /*  =========================================================================
@@ -105,9 +105,12 @@ def new():
     return ffi.gc(loop, destroy)
 
 def item(**kwargs):
-    return ffi.new('zmq_pollitem_t', kwargs)
+    return ffi.new('zmq_pollitem_t*', kwargs)
 
-poller = C.zloop_poller
+def poller(p, item, handler, arg=None):
+    cb = ffi.callback('zloop_fn', handler)
+    return C.zloop_poller(p, item, cb, ffi.new_handle(None))
+
 poller_end = C.zloop_poller_end
 set_tolerant = C.zloop_set_tolerant
 timer = C.zloop_timer

@@ -10,7 +10,7 @@ auth, and cert functions are provided.
 
 Some functions will probably not be wrapped, notably those that
 provide duplicate functionality to built-in python type or libraries
-like zlist, zhash, zsys, zclock, etc.
+like zlist, zhash, zsys, zclock, zdir, etc.
 
 CZMQ functions are exposed via the cffi library's ABI access mode.  No
 compiler is required to use it.  The czmq library is accessed with
