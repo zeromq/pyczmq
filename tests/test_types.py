@@ -1,9 +1,9 @@
-from pyczmq import types, zsocket
+from pyczmq import Context
 
 def test_types():
-    ctx = types.Context()
-    pub = ctx.socket(zsocket.PUB)
-    sub = ctx.socket(zsocket.SUB)
+    ctx = Context()
+    pub = ctx.socket('PUB')
+    sub = ctx.socket('SUB')
     sub.set_subscribe('')
     pub.bind('inproc://zoop')
     sub.connect('inproc://zoop')

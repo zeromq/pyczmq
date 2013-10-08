@@ -44,6 +44,8 @@ class Context(object):
         zctx.set_iothreads(self.ctx, iothreads)
     
     def socket(self, typ):
+        if isinstance(typ, basestring):
+            typ = zsocket.types[typ]
         return Socket(self.ctx, typ)
 
 

@@ -98,3 +98,17 @@ PUSH = 8
 XPUB = 9
 XSUB = 10
 STREAM = 11
+
+types = dict(
+    PAIR=PAIR,
+    PUB=PUB,
+    SUB=SUB,
+    REQ=REQ,
+    REP=REP,
+    DEALER=DEALER,
+    ROUTER=ROUTER,
+    PULL=PULL,
+    PUSH=PUSH,
+    XPUB=XPUB,
+    XSUB=XSUB,
+    STREAM=STREAM)
