@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, ptop
 
 ffi.cdef('''
 /*  =========================================================================
@@ -78,10 +78,7 @@ typedef struct _zbeacon_t zbeacon_t;
 def new(port):
     beacon = C.zbeacon_new(port)
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zbeacon_t*[1]')
-        ptop[0] = c
-        C.zbeacon_destroy(ptop)
+        C.zbeacon_destroy(ptop('zbeacon_t', c))
     return ffi.gc(beacon, destroy)
 
 hostname = C.zbeacon_hostname

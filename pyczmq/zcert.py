@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, ptop, nullable
 
 ffi.cdef('''
 /*  =========================================================================
@@ -109,20 +109,14 @@ typedef struct _zcert_t zcert_t;
 def new():
     cert = C.zcert_new()
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zcert_t*[1]')
-        ptop[0] = c
-        C.zcert_destroy(ptop)
+        C.zcert_destroy(ptop('zcert_t', c))
     return ffi.gc(cert, destroy)
 
 
 def new_from(public_key, secret_key):
     cert = C.zcert_new_from(public_key, secret_key)
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zcert_t*[1]')
-        ptop[0] = c
-        C.zcert_destroy(ptop)
+        C.zcert_destroy(ptop('zcert_t', c))
     return ffi.gc(cert, destroy)
 
 
@@ -131,7 +125,7 @@ def new_from(public_key, secret_key):
 # secret_key = C.zcert_secret_key
 public_txt = C.zcert_public_txt
 secret_txt = C.zcert_secret_txt
-set_meta = C.zcert_set_meta
+set_meta = nullable(C.zcert_set_meta)
 meta = C.zcert_meta
 load = C.zcert_load
 save = C.zcert_save

@@ -1,4 +1,4 @@
-from pyczmq._cffi import ffi, C
+from pyczmq._cffi import ffi, C, ptop, nullable
 
 ffi.cdef('''
 /*  =========================================================================
@@ -101,10 +101,7 @@ POLLERR = 4
 def new():
     loop = C.zloop_new()
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zloop_t*[1]')
-        ptop[0] = c
-        C.zloop_destroy(ptop)
+        C.zloop_destroy(ptop('zloop_t', c))
     return ffi.gc(loop, destroy)
 
 def item(**kwargs):

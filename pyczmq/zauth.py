@@ -86,10 +86,7 @@ typedef struct _zauth_t zauth_t;
 def new(ctx):
     auth = C.zauth_new(ctx)
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zauth_t*[1]')
-        ptop[0] = c
-        C.zauth_destroy(ptop)
+        C.zauth_destroy(ptop('zauth_t', c))
     return ffi.gc(auth, destroy)
 
 allow = C.zauth_allow

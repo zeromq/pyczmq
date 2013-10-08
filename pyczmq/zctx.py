@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, ptop, nullable
 
 functions = \
 '''
@@ -90,11 +90,7 @@ ffi.cdef(functions)
 def new():
     ctx = C.zctx_new()
     def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zctx_t*[1]')
-        ptop[0] = c
-        C.zctx_destroy(ptop)
-        del ptop
+        C.zctx_destroy(ptop('zctx_t', c))
     return ffi.gc(ctx, destroy)
 
 set_iothreads = C.zctx_set_iothreads
@@ -102,7 +98,7 @@ set_linger = C.zctx_set_linger
 set_pipehwm = C.zctx_set_pipehwm
 set_sndhwm = C.zctx_set_sndhwm
 set_rcvhwm = C.zctx_set_rcvhwm
-underlying = C.zctx_underlying
+underlying = nullable(C.zctx_underlying)
 test = C.zctx_test
 interrupted = C.zctx_interrupted
 

@@ -26,7 +26,4 @@ def test_zmsg():
     assert zframe.data(zmsg.next(n)) == 'bar'
     assert zframe.data(zmsg.next(n)) == 'foo'
     assert zframe.data(zmsg.next(n)) == 'ding'
-    assert zmsg.next(n) == ffi.NULL
-
-
-    
+    assert zmsg.next(n) is None

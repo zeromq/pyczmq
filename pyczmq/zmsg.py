@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, nullable, ptop
 
 functions = \
 '''
@@ -188,45 +188,46 @@ typedef struct _zmsg_t zmsg_t;
 ffi.cdef(functions)
 
 new = C.zmsg_new
+
 def destroy(m):
-    ptop = ffi.new('zmsg_t*[1]')
-    ptop[0] = msg
-    C.zmsg_destroy(ptop)
+    C.zmsg_destroy(ptop('zmsg_t', m))
 
-recv = C.zmsg_recv
+recv = nullable(C.zmsg_recv)
 
-def send(msg, socket):
-    ptop = ffi.new('zmsg_t*[1]')
-    ptop[0] = msg
-    C.zmsg_send(ptop, socket)
+def send(m, socket):
+    C.zmsg_send(ptop('zmsg_t', m), socket)
 
 size = C.zmsg_size
 content_size = C.zmsg_content_size
 push = C.zmsg_push
-pop = C.zmsg_pop
+pop = nullable(C.zmsg_pop)
 
-def append(msg, frame):
-    ptop = ffi.new('zframe_t*[1]')
-    ptop[0] = frame
-    C.zmsg_append(msg, ptop)
+def append(m, f):
+    C.zmsg_append(m, ptop('zframe_t', f))
 
 add = C.zmsg_add
 pushmem = C.zmsg_pushmem
 addmem = C.zmsg_addmem
 pushstr = C.zmsg_pushstr
 addstr = C.zmsg_addstr
-popstr = lambda s: ffi.string(C.zmsg_popstr(s))
+
+def popstr(s):
+    val = C.zmsg_popstr(s)
+    if val == ffi.NULL:
+        return None
+    return ffi.string(val)
+
 wrap = C.zmsg_wrap
 unwrap = C.zmsg_unwrap
 remove = C.zmsg_remove
-first = C.zmsg_first
-next = C.zmsg_next
-last = C.zmsg_last
+first = nullable(C.zmsg_first)
+next = nullable(C.zmsg_next)
+last = nullable(C.zmsg_last)
 save = C.zmsg_save
-load = C.zmsg_load
+load = nullable(C.zmsg_load)
 encode = C.zmsg_encode
 decode = C.zmsg_decode
-dup = C.zmsg_dup
+dup = nullable(C.zmsg_dup)
 dump = C.zmsg_dump
 dump_to_stream = C.zmsg_dump_to_stream
 test = C.zmsg_test
