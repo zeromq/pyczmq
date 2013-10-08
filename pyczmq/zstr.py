@@ -57,9 +57,8 @@ functions = \
 
 ffi.cdef(functions)
 
-recv = C.zstr_recv
-recv_str = lambda s: ffi.string(recv(s))
-recv_nowait = C.zstr_recv_nowait
+recv = lambda s: ffi.string(C.zstr_recv(s))
+recv_nowait = lambda s: ffi.string(C.zstr_recv_nowait(s))
 send = C.zstr_send
 sendm = C.zstr_sendm
 sendx = C.zstr_sendx

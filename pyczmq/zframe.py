@@ -1,5 +1,6 @@
-from pyczmq._cffi import C, ffi
+from __future__ import print_function
 
+from pyczmq._cffi import C, ffi
 
 ffi.cdef('''
 /*  =========================================================================
@@ -114,15 +115,28 @@ typedef struct _zframe_t zframe_t;
     zframe_test (bool verbose);
 ''')
 
-def new():
-    frame = C.zframe_new()
-    def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zframe_t*[1]')
-        ptop[0] = c
-        C.zframe_destroy(ptop)
-    return ffi.gc(frame, destroy)
+def new(data, size=None):
+    if isinstance(data, basestring):  # FIXME:mp not py3
+        size = len(data)
+    return C.zframe_new(data, size)
 
 MORE = 1
 REUSE = 2
 DONTWAIT = 4
+
+recv = C.zframe_recv
+recv_nowait = C.zframe_recv_nowait
+send = C.zframe_send
+size = C.zframe_size;
+data = lambda f: ffi.string(C.zframe_data(f))
+dup = C.zframe_dup
+strhex = lambda f: ffi.string(C.zframe_strhex(f))
+strdup = C.zframe_strdup
+streq = C.zframe_streq
+more = C.zframe_more
+set_more = C.zframe_set_more
+eq = C.zframe_eq
+fprint = C.zframe_fprint
+print = C.zframe_print
+reset = C.zframe_reset
+test = C.zframe_test

@@ -187,28 +187,35 @@ typedef struct _zmsg_t zmsg_t;
 
 ffi.cdef(functions)
 
-def new():
-    msg = C.zmsg_new()
-    def destroy(c):
-        # pointer to pointer dance
-        ptop = ffi.new('zmsg_t*[1]')
-        ptop[0] = c
-        C.zmsg_destroy(ptop)
-    return ffi.gc(msg, destroy)
+new = C.zmsg_new
+def destroy(m):
+    ptop = ffi.new('zmsg_t*[1]')
+    ptop[0] = msg
+    C.zmsg_destroy(ptop)
 
 recv = C.zmsg_recv
-send = C.zmsg_send
+
+def send(msg, socket):
+    ptop = ffi.new('zmsg_t*[1]')
+    ptop[0] = msg
+    C.zmsg_send(ptop, socket)
+
 size = C.zmsg_size
 content_size = C.zmsg_content_size
 push = C.zmsg_push
 pop = C.zmsg_pop
-append = C.zmsg_append
+
+def append(msg, frame):
+    ptop = ffi.new('zframe_t*[1]')
+    ptop[0] = frame
+    C.zmsg_append(msg, ptop)
+
 add = C.zmsg_add
 pushmem = C.zmsg_pushmem
 addmem = C.zmsg_addmem
 pushstr = C.zmsg_pushstr
 addstr = C.zmsg_addstr
-popstr = C.zmsg_popstr
+popstr = lambda s: ffi.string(C.zmsg_popstr(s))
 wrap = C.zmsg_wrap
 unwrap = C.zmsg_unwrap
 remove = C.zmsg_remove

@@ -1,5 +1,5 @@
 import new
-from pyczmq import _cffi, zctx, zsocket, zstr, zsockopt, zbeacon, zloop
+from pyczmq import _cffi, zctx, zsocket, zsockopt, zstr, zframe, zmsg, zbeacon, zloop
 
 
 class Socket(object):
@@ -11,7 +11,22 @@ class Socket(object):
         return zstr.send(self.sock, msg)
 
     def recv(self):
-        return zstr.recv_str(self.sock)
+        return zstr.recv(self.sock)
+
+    def recv_nowait(self):
+        return zstr.recv_nowait(self.sock)
+
+    def send_frame(self, frame):
+        return zframe.send(self.sock, frame)
+
+    def recv_frame(self):
+        return zframe.recv(self.sock)
+
+    def recv_frame_nowait(self):
+        return zframe.recv_nowait(self.sock)
+
+    def send_msg(self, msg):
+        return zmsg.send(msg)
 
     def connect(self, endpoint):
         return zsocket.connect(self.sock, endpoint)

@@ -37,16 +37,26 @@ Functions also have aliases in a module level namespace interface, so:
 
   - etc...
 
-The 'new' functions in the module namespaces (like pyczmq.zctx.new)
-are wrappers that plug into Python's garbage collector, so you
-typically never need to explicitly destroy objects if you use the
-namespace interface.  Therefore, pyczmq.zctx.new isn't *really*
-pyczmq.C.zmq_new, but the effect is exactly the same.  If you use the
-"raw" C binding interface pyczmq.C.zmq_new, however, you must
+Some of the 'new' functions in the module namespaces (like
+pyczmq.zctx.new) are wrappers that plug into Python's garbage
+collector, so you typically never need to explicitly destroy objects
+if you use the namespace interface.  Therefore, pyczmq.zctx.new isn't
+*really* pyczmq.C.zmq_new, but the effect is exactly the same.  If you
+use the "raw" C binding interface pyczmq.C.zctx_new, however, you must
 explicitly garbage collect your own resources by calling the
 coresponding destroy method (pyczmq.C.zctx_destroy, etc.).
+
+Some 'new' functions do not do this wrapping behavior, because they
+are meant to be destroyed by czmq.  zmsg objects for example are
+destroyed by zmsg_send, and zframe objects have their ownership taken
+over by various functions in zmsg and are destroyed when the msg is
+sent and destroyed.  If you create these objects and don't in turn
+call the functions that destroy them, you must explicitly destroy them
+yourself with zmsg.destroy or zframe.destroy.
 
 Functionality is also encapsulated in a number of optional helper
 classes to make a more "object oriented" API, if you're into that kind
 of thing.  Types included are 'Context', 'Socket', 'Loop' and
-'Beacon'.
+'Beacon'.  These classes also try to quack more pythonically than the
+underlying function api and some of the ownership issues are
+(hopefully) hidden.

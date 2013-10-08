@@ -1,7 +1,6 @@
 from pyczmq import zctx
 
 def test_ctx():
-    zctx.test(True)
     ctx = zctx.new()
     zctx.set_iothreads(ctx, 2)
     zctx.set_iothreads(ctx, 1)

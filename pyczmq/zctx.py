@@ -82,8 +82,7 @@ typedef struct _zctx_t zctx_t;
 
 //  Global signal indicator, TRUE when user presses Ctrl-C or the process
 //  gets a SIGTERM signal.
-//  extern volatile int zctx_interrupted;
-//  @end
+extern volatile int zctx_interrupted;
 '''
 
 ffi.cdef(functions)
@@ -95,6 +94,7 @@ def new():
         ptop = ffi.new('zctx_t*[1]')
         ptop[0] = c
         C.zctx_destroy(ptop)
+        del ptop
     return ffi.gc(ctx, destroy)
 
 set_iothreads = C.zctx_set_iothreads
@@ -104,8 +104,8 @@ set_sndhwm = C.zctx_set_sndhwm
 set_rcvhwm = C.zctx_set_rcvhwm
 underlying = C.zctx_underlying
 test = C.zctx_test
+interrupted = C.zctx_interrupted
 
 # //  Global signal indicator, TRUE when user presses Ctrl-C or the process
 # //  gets a SIGTERM signal.
-# //  extern volatile int zctx_interrupted;
 # //  @end
