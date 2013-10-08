@@ -9,8 +9,8 @@ CZMQ functions are exposed via the cffi library's ABI access mode.  No
 compiler is required to use it.  The czmq library is accessed with
 dlopen and a set of parsed function declarations.
 
-All CZMQ functions can be access one of three ways, directly via the
-low-level cffi binding, ie:
+All CZMQ functions can be accessed directly via the low-level cffi
+binding, ie:
 
    - pyczmq.C.zctx_new
 
