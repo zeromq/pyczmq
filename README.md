@@ -37,6 +37,19 @@ Functions also have aliases in a module level namespace interface, so:
 
   - etc...
 
+For example a simple PUSH/PULL socket pipeline::
+
+    ctx = zctx.new()
+    push = zsocket.new(ctx, zsocket.PUSH)
+    pull = zsocket.new(ctx, zsocket.PULL)
+    zsocket.bind(push, 'inproc://test')
+    zsocket.connect(pull, 'inproc://test')
+    zstr.send(push, 'foo')
+    assert zstr.recv(pull) == 'foo'
+    zstr.send(push, 'foo')
+    zsocket.poll(pull, 1)
+    assert zstr.recv_nowait(pull) == 'foo'
+
 Some of the 'new' functions in the module namespaces (like
 pyczmq.zctx.new) are wrappers that plug into Python's garbage
 collector, so you typically never need to explicitly destroy objects
@@ -56,7 +69,21 @@ yourself with zmsg.destroy or zframe.destroy.
 
 Functionality is also encapsulated in a number of optional helper
 classes to make a more "object oriented" API, if you're into that kind
-of thing.  Types included are 'Context', 'Socket', 'Loop' and
-'Beacon'.  These classes also try to quack more pythonically than the
-underlying function api and some of the ownership issues are
-(hopefully) hidden.
+of thing.  Types included are 'Context', 'Socket', 'Frame', 'Msg',
+'Loop' and 'Beacon'.  These classes also try to quack more
+pythonically than the underlying function api and some of the
+ownership issues are (hopefully) hidden.  For example:
+
+    ctx = Context()
+    pub = ctx.socket('PUB')
+    sub = ctx.socket('SUB')
+    sub.set_subscribe('')
+    pub.bind('inproc://zoop')
+    sub.connect('inproc://zoop')
+    pub.send('foo')
+    sub.poll(1)
+    assert sub.recv() == 'foo'
+
+The object wrappers come at the expense of extra objects and function
+calls to construct the facade.  This is probably not an issue for most
+applications.
