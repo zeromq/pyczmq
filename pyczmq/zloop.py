@@ -108,8 +108,7 @@ def item(**kwargs):
     return ffi.new('zmq_pollitem_t*', kwargs)
 
 def poller(p, item, handler, arg=None):
-    cb = ffi.callback('zloop_fn', handler)
-    return C.zloop_poller(p, item, cb, ffi.new_handle(None))
+    return C.zloop_poller(p, item, handler, ffi.new_handle(arg))
 
 poller_end = C.zloop_poller_end
 set_tolerant = C.zloop_set_tolerant

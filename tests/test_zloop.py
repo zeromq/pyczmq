@@ -1,4 +1,4 @@
-from pyczmq import zctx, zsocket, zstr, zloop
+from pyczmq import ffi, zctx, zsocket, zstr, zloop
 
 def test_zloop():
     ctx = zctx.new()
@@ -10,11 +10,12 @@ def test_zloop():
     l = zloop.new()
     item = zloop.item(socket=u, fd=0, events=zloop.POLLIN)
 
+    @ffi.callback('zloop_fn')
     def handler(loop, item, arg):
-        return 1
+        assert zstr.recv(item.socket) == 'foo'
+        assert ffi.from_handle(arg) == 3
+        return -1
 
     zloop.poller(l, item, handler, 3)
     zstr.send(p, 'foo')
-    zloop.set_verbose(l, True)
-    # dying on SIGIL, wtf?
-    #zloop.start(l)
+    zloop.start(l)
