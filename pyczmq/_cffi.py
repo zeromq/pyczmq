@@ -17,3 +17,8 @@ def ptop(typ, val):
     ptop[0] = val
     return ptop
 
+def tostr(func):
+    def inner(*args):
+        return ffi.string(func(*args))
+    return inner
+

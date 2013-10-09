@@ -64,6 +64,8 @@ class Context(object):
         return Socket(self.ctx, typ)
 
 
+# TODO below
+
 class Loop(object):
     
     def __init__(self):

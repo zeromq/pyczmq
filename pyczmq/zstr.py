@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, tostr
 
 functions = \
 '''
@@ -57,8 +57,8 @@ functions = \
 
 ffi.cdef(functions)
 
-recv = lambda s: ffi.string(C.zstr_recv(s))
-recv_nowait = lambda s: ffi.string(C.zstr_recv_nowait(s))
+recv = tostr(C.zstr_recv)
+recv_nowait = tostr(C.zstr_recv_nowait)
 send = C.zstr_send
 sendm = C.zstr_sendm
 sendx = C.zstr_sendx

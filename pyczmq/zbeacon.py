@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi, ptop
+from pyczmq._cffi import C, ffi, ptop, tostr
 
 ffi.cdef('''
 /*  =========================================================================
@@ -81,7 +81,7 @@ def new(port):
         C.zbeacon_destroy(ptop('zbeacon_t', c))
     return ffi.gc(beacon, destroy)
 
-hostname = C.zbeacon_hostname
+hostname = tostr(C.zbeacon_hostname)
 interval = C.zbeacon_set_interval
 noecho = C.zbeacon_noecho
 publish = C.zbeacon_publish

@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, tostr
 
 ffi.cdef('''
 /*  =========================================================================
@@ -128,9 +128,9 @@ recv = C.zframe_recv
 recv_nowait = C.zframe_recv_nowait
 send = C.zframe_send
 size = C.zframe_size;
-data = lambda f: ffi.string(C.zframe_data(f))
+data = tostr(C.zframe_data)
 dup = C.zframe_dup
-strhex = lambda f: ffi.string(C.zframe_strhex(f))
+strhex = tostr(C.zframe_strhex)
 strdup = C.zframe_strdup
 streq = C.zframe_streq
 more = C.zframe_more
