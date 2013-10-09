@@ -12,7 +12,7 @@ class Frame(object):
         else:
             self.frame = frame
 
-    def __repr__(self):
+    def __str__(self):
         return zframe.data(self.frame)
 
     def __len__(self):
