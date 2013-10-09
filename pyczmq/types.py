@@ -2,7 +2,99 @@ import new
 from pyczmq import _cffi, zctx, zsocket, zsockopt, zstr, zframe, zmsg, zbeacon, zloop
 
 
+class Frame(object):
+    
+    __slots__ = ('frame',)
+
+    def __init__(self, data=None, frame=None):
+        if data is not None:
+            self.frame = zframe.new(data)
+        else:
+            self.frame = frame
+
+    def __repr__(self):
+        return zframe.data(self.frame)
+
+    def __len__(self):
+        return zframe.size(self.frame)
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return zframe.streq(self.frame, other)
+        return zframe.eq(self.frame, other)
+
+    def dup(self):
+        return zframe.dup(self.frame)
+
+    def strhex(self):
+        return zframe.strhex(self.frame)
+
+    def reset(self, data):
+        return zframe.reset(data, len(data))
+
+    def more(self):
+        return zframe.more(self.sock)
+
+    def set_more(self, val):
+        return zframe.set_more(self.sock, val)
+
+
+class Msg(object):
+
+    __slots__ = ('msg',)
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __len__(self):
+        return zmsg.size(self.msg)
+
+    def content_size(self):
+        return zmsg.content_size(self.msg)
+
+    def push(self, frame):
+        if isinstance(frame, str):
+            return zmsg.pushstr(self.msg, frame)
+        if isinstance(frame, Frame):
+            frame = frame.frame
+        return zmsg.push(self.msg, frame)
+
+    def append(self, frame):
+        if isinstance(frame, str):
+            return zmsg.addstr(self.msg, frame)
+        if isinstance(frame, Frame):
+            frame = frame.frame
+        return zmsg.append(self.msg, frame)
+
+    def pop(self):
+        return Frame(frame=zmsg.pop(self.msg))
+
+    def popstr(self):
+        return zmsg.popstr(self.msg)
+
+    def first(self):
+        return zmsg.first(self.msg)
+
+    def next(self):
+        return zmsg.first(self.msg)
+
+    def last(self):
+        return zmsg.first(self.msg)
+
+    def __iter__(self):
+        n = self.next()
+        while True:
+            if n is None:
+                raise StopIteration
+            yield n
+            n = self.next()
+
+
 class Socket(object):
+    """Wrapper class around zsocket/zsockopt
+    """
+
+    __slots__ = ('sock',)
 
     def __init__(self, ctx, typ):
         self.sock = zsocket.new(ctx, typ)
@@ -17,16 +109,23 @@ class Socket(object):
         return zstr.recv_nowait(self.sock)
 
     def send_frame(self, frame):
+        if isinstance(frame, Frame):
+            frame = frame.frame
         return zframe.send(self.sock, frame)
 
     def recv_frame(self):
-        return zframe.recv(self.sock)
+        return Frame(frame=zframe.recv(self.sock))
 
     def recv_frame_nowait(self):
-        return zframe.recv_nowait(self.sock)
+        return Frame(frame=zframe.recv_nowait(self.sock))
 
     def send_msg(self, msg):
-        return zmsg.send(msg)
+        if isinstance(frame, Msg):
+            msg = msg.msg
+        return zmsg.send(self.sock, msg)
+
+    def recv_msg(self):
+        return Msg(zmsg.recv(self.sock))
 
     def connect(self, endpoint):
         return zsocket.connect(self.sock, endpoint)

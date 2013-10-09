@@ -205,7 +205,6 @@ pop = nullable(C.zmsg_pop)
 def append(m, f):
     C.zmsg_append(m, ptop('zframe_t', f))
 
-add = C.zmsg_add
 pushmem = C.zmsg_pushmem
 addmem = C.zmsg_addmem
 pushstr = C.zmsg_pushstr

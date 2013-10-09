@@ -1,7 +1,6 @@
 from pyczmq._cffi import C, ffi, ptop, nullable
 
-functions = \
-'''
+ffi.cdef('''
 /*  =========================================================================
     zctx - working with 0MQ contexts
 
@@ -83,9 +82,7 @@ typedef struct _zctx_t zctx_t;
 //  Global signal indicator, TRUE when user presses Ctrl-C or the process
 //  gets a SIGTERM signal.
 extern volatile int zctx_interrupted;
-'''
-
-ffi.cdef(functions)
+''')
 
 def new():
     ctx = C.zctx_new()

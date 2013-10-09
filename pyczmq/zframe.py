@@ -115,10 +115,8 @@ typedef struct _zframe_t zframe_t;
     zframe_test (bool verbose);
 ''')
 
-def new(data, size=None):
-    if isinstance(data, basestring):  # FIXME:mp not py3
-        size = len(data)
-    return C.zframe_new(data, size)
+def new(data):
+    return C.zframe_new(data, len(data))
 
 MORE = 1
 REUSE = 2
