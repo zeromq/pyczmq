@@ -137,7 +137,7 @@ def version():
     minor= ffi.new('int*')
     patch = ffi.new('int*')
     Z.zmq_version(major, minor, patch)
-    return (major, minor, patch)
+    return (major[0], minor[0], patch[0])
 
 
 ffi.cdef('const char *zmq_strerror (int errnum);')
