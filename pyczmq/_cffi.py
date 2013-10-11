@@ -1,3 +1,4 @@
+from functools import wraps
 from cffi import FFI
 
 ffi = FFI()
@@ -27,7 +28,8 @@ def tostr(func):
 
 def cdef(decl, returns_string=False, nullable=False):
     ffi.cdef(decl)
-    def wraps(f):
+    def wrap(f):
+        @wraps(f)
         def inner_f(*args):
             val = f(*args)
             if returns_string:
@@ -36,5 +38,5 @@ def cdef(decl, returns_string=False, nullable=False):
                 return None
             return val
         return inner_f
-    return wraps
+    return wrap
 
