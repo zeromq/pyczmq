@@ -2,6 +2,10 @@ Python CFFI wrapper around the czmq zeromq bindings.
 
 http://czmq.zeromq.org/
 
+The documentation for this binding can be found at readthedocs:
+
+http://pyczmq.readthedocs.org/
+
 This is still a work in progress, not all of the API is fully
 wrapped yet.
 
@@ -87,3 +91,8 @@ ownership issues are (hopefully) hidden.  For example::
 The object wrappers come at the expense of extra objects and function
 calls to construct the facade.  This is probably not an issue for most
 applications.
+
+Like what you see?  If you feel like leaving me or other open source
+developers a tip for our work, please visit gittip:
+
+https://www.gittip.com/michelp/

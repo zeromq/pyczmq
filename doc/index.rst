@@ -6,10 +6,14 @@
 Welcome to pyczmq's documentation!
 ==================================
 
+pyczmq is a `CFFI <http://cffi.readthedocs.org/en/release-0.7/>`_ wrapper around `CZMQ <http://czmq.zeromq.org/>`_.
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   pyczmq
 
 
 
