@@ -1,11 +1,11 @@
-from pyczmq._cffi import ffi, C, ptop
+from pyczmq._cffi import ffi, C, ptop, cdef
 
 
-ffi.cdef('typedef struct _zloop_t zloop_t;')
-ffi.cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
+cdef('typedef struct _zloop_t zloop_t;')
+cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
 
 
-ffi.cdef('void zloop_destroy (zloop_t **self_p);')
+@cdef('void zloop_destroy (zloop_t **self_p);')
 def destroy(loop):
     """
     Destroy a reactor, this is not necessary if you create it with
@@ -14,13 +14,13 @@ def destroy(loop):
     return C.zloop_destroy(ptop('zloop_t', loop))
 
 
-ffi.cdef(' zloop_t * zloop_new (void);')
+@cdef(' zloop_t * zloop_new (void);')
 def new():
     """Create a new zloop reactor"""
     return ffi.gc(C.zloop_new(), destroy)
 
 
-ffi.cdef('int zloop_poller (zloop_t *self, zmq_pollitem_t *item,'
+@cdef('int zloop_poller (zloop_t *self, zmq_pollitem_t *item,'
          ' zloop_fn handler, void *arg);')
 def poller(p, item, handler, arg=None):
     """
@@ -33,7 +33,7 @@ def poller(p, item, handler, arg=None):
     return C.zloop_poller(p, item, handler, ffi.new_handle(arg))
 
 
-ffi.cdef('void zloop_poller_end (zloop_t *self, zmq_pollitem_t *item);')
+@cdef('void zloop_poller_end (zloop_t *self, zmq_pollitem_t *item);')
 def poller_end(loop, item):
     """
     Cancel a pollitem from the reactor, specified by socket or FD. If both
@@ -43,7 +43,7 @@ def poller_end(loop, item):
     return C.zloop_poller_end(loop, item)
 
 
-ffi.cdef('void zloop_set_tolerant (zloop_t *self, zmq_pollitem_t *item);')
+@cdef('void zloop_set_tolerant (zloop_t *self, zmq_pollitem_t *item);')
 def set_tolerant(loop, item):
     """
     Configure a registered pollitem to ignore errors. If you do not set this, 
@@ -51,7 +51,7 @@ def set_tolerant(loop, item):
     """
     return C.zloop_set_tolerant(loop, item)
 
-ffi.cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_fn handler, void *arg);')
+@cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_fn handler, void *arg);')
 def timer(loop, delay, times, handler, arg):
     """
     Register a timer that expires after some delay and repeats some number of
@@ -62,7 +62,7 @@ def timer(loop, delay, times, handler, arg):
     return C.zloop_timer(loop, delay, times, handler, arg)
 
 
-ffi.cdef('int zloop_timer_end (zloop_t *self, void *arg);')
+@cdef('int zloop_timer_end (zloop_t *self, void *arg);')
 def timer_end(loop, arg):
     """
     Cancel all timers for a specific argument (as provided in zloop_timer)
@@ -70,7 +70,7 @@ def timer_end(loop, arg):
     return C.zloop_timer_end(loop, arg)
 
 
-ffi.cdef('void zloop_set_verbose (zloop_t *self, bool verbose);')
+@cdef('void zloop_set_verbose (zloop_t *self, bool verbose);')
 def set_verbose(loop, verbose):
     """
     Set verbose tracing of reactor on/off
@@ -78,7 +78,7 @@ def set_verbose(loop, verbose):
     return C.zloop_set_verbose(loop, verbose)
 
 
-ffi.cdef('int zloop_start (zloop_t *self);')
+@cdef('int zloop_start (zloop_t *self);')
 def start(loop):
     """
     Start the reactor. Takes control of the thread and returns when the 0MQ
@@ -89,5 +89,5 @@ def start(loop):
     return C.zloop_start(loop)
 
 
-ffi.cdef('void zloop_test (bool verbose);')
+cdef('void zloop_test (bool verbose);')
 
