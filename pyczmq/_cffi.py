@@ -39,6 +39,9 @@ def cdef(decl, returns_string=False, nullable=False):
                 return ffi.string(val)
             return val
 
+        # this insanity inserts a formatted argspec string
+        # into the function's docstring, so that sphinx
+        # gets the right args instead of just the wrapper args
         args, varargs, varkw, defaults = inspect.getargspec(f)
         defaults = () if defaults is None else defaults
         defaults = ["\"{}\"".format(a) if type(a) == str else a for a in defaults]

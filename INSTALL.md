@@ -7,7 +7,7 @@ apt-get install libffi-dev'.
 
 Clone pyczmq repo:
 
-  git clone git@github.com:michelp/pyczmq.git
+  git clone https://github.com/michelp/pyczmq.git
 
 and run '. bootstrap' This will create a virtualenv for you and
 install the necessary dependencies.
