@@ -33,10 +33,10 @@ def cdef(decl, returns_string=False, nullable=False):
         @wraps(f)
         def inner_f(*args):
             val = f(*args)
-            if returns_string:
-                return ffi.string(val)
             if nullable and val == ffi.NULL:
                 return None
+            elif returns_string:
+                return ffi.string(val)
             return val
 
         args, varargs, varkw, defaults = inspect.getargspec(f)
