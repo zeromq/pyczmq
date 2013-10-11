@@ -2,6 +2,7 @@ from cffi import FFI
 
 ffi = FFI()
 C = ffi.dlopen('czmq')
+Z = ffi.dlopen('zmq')
 
 def nullable(func):
     def inner(*args):
