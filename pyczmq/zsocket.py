@@ -1,5 +1,10 @@
 from pyczmq._cffi import C, ffi, cdef
 
+__doc__ = """
+The zsocket class provides helper functions for ØMQ sockets. It
+doesn't wrap the ØMQ socket type, to avoid breaking all libzmq
+socket-related calls.
+"""
 
 @cdef('void zsocket_destroy (zctx_t *self, void *socket);')
 def destroy(ctx, socket):

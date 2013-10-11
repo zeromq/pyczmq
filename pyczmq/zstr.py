@@ -1,5 +1,11 @@
 from pyczmq._cffi import C, ffi, cdef
 
+__doc__ = """
+The zstr class provides utility functions for sending and receiving
+strings across ØMQ sockets. It sends strings without a terminating
+null, and appends a null byte on received strings. This class is for
+simple message sending.
+"""
 
 @cdef('char * zstr_recv (void *socket);', returns_string=True)
 def recv(sock):

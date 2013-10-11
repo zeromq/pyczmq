@@ -1,5 +1,13 @@
 from pyczmq._cffi import C, ffi, ptop, cdef
 
+__doc__ - """
+The zmsg class provides methods to send and receive multipart messages
+across ØMQ sockets. This class provides a list-like container
+interface, with methods to work with the overall container. zmsg_t
+messages are composed of zero or more zframe_t frames.
+"""
+
+
 cdef('typedef struct _zmsg_t zmsg_t;')
 
 
@@ -14,7 +22,8 @@ def destroy(m):
 def new():
     """Create a new empty message object,
 
-    Note, no gc wrapper, messages self-destruct.
+    Note, no gc wrapper, messages self-destruct by send.  If you don't
+    send a message, you DO have to destroy() it.
     """
     return C.zmsg_new()
 
