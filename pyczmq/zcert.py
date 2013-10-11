@@ -1,137 +1,127 @@
-from pyczmq._cffi import C, ffi, ptop, nullable
+from pyczmq._cffi import C, ffi, ptop, cdef
 
-ffi.cdef('''
-/*  =========================================================================
-    zcert - work with CURVE security certificates
-
-    -------------------------------------------------------------------------
-    Copyright (c) 1991-2013 iMatix Corporation <www.imatix.com>
-    Copyright other contributors as noted in the AUTHORS file.
-
-    This file is part of CZMQ, the high-level C binding for 0MQ:
-    http://czmq.zeromq.org.
-
-    This is free software; you can redistribute it and/or modify it under
-    the terms of the GNU Lesser General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
-
-    This software is distributed in the hope that it will be useful, but
-    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABIL-
-    ITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General
-    Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program. If not, see <http://www.gnu.org/licenses/>.
-    =========================================================================
-*/
-
-//  Opaque class structure
-typedef struct _zcert_t zcert_t;
-
-//  Create and initialize a new certificate in memory
- zcert_t *
-    zcert_new (void);
-
-//  Constructor, accepts public/secret key pair from caller
- zcert_t *
-    zcert_new_from (char *public_key, char *secret_key);
-
-//  Destroy a certificate in memory
- void
-    zcert_destroy (zcert_t **self_p);
-
-//  Return public part of key pair as 32-byte binary string
- char *
-    zcert_public_key (zcert_t *self);
-
-//  Return secret part of key pair as 32-byte binary string
- char *
-    zcert_secret_key (zcert_t *self);
-
-//  Return public part of key pair as Z85 armored string
- char *
-    zcert_public_txt (zcert_t *self);
-
-//  Return secret part of key pair as Z85 armored string
- char *
-    zcert_secret_txt (zcert_t *self);
-
-//  Set certificate metadata from formatted string.
- void
-    zcert_set_meta (zcert_t *self, char *name, char *format, ...);
-
-//  Get metadata value from certificate; if the metadata value doesn't 
-//  exist, returns NULL.
- char *
-    zcert_meta (zcert_t *self, char *name);
-
-//  Load certificate from file (constructor)
-//  The filename is treated as a printf format specifier.
- zcert_t *
-    zcert_load (char *filename, ...);
-
-//  Save full certificate (public + secret) to file for persistent storage
-//  This creates one public file and one secret file (filename + "_secret").
-//  The filename is treated as a printf format specifier.
- int
-    zcert_save (zcert_t *self, char *filename, ...);
-
-//  Save public certificate only to file for persistent storage
-//  The filename is treated as a printf format specifier.
- int
-    zcert_save_public (zcert_t *self, char *filename, ...);
-
-//  Apply certificate to socket, i.e. use for CURVE security on socket.
-//  If certificate was loaded from public file, the secret key will be
-//  undefined, and this certificate will not work successfully.
- void
-    zcert_apply (zcert_t *self, void *zocket);
-
-//  Return copy of certificate
- zcert_t *
-    zcert_dup (zcert_t *self);
-
-//  Return true if two certificates have the same keys
- bool
-    zcert_eq (zcert_t *self, zcert_t *compare);
-
-//  Dump certificate contents to stderr for debugging
- void
-    zcert_dump (zcert_t *self);
-
-//  Self test of this class
- int
-    zcert_test (bool verbose);
-''')
+cdef('typedef struct _zcert_t zcert_t;')
 
 
+@cdef('void zcert_destroy (zcert_t **self_p);')
+def destroy(cert):
+    """Destroy a certificate in memory
+    """
+    C.zcert_destroy(ptop('zcert_t', cert))
+
+
+@cdef('zcert_t * zcert_new (void);')
 def new():
-    cert = C.zcert_new()
-    def destroy(c):
-        C.zcert_destroy(ptop('zcert_t', c))
-    return ffi.gc(cert, destroy)
+    """Create and initialize a new certificate in memory
+    """
+    return ffi.gc(zcert_new(), destroy)
 
 
+@cdef('zcert_t * zcert_new_from (char *public_key, char *secret_key);')
 def new_from(public_key, secret_key):
-    cert = C.zcert_new_from(public_key, secret_key)
-    def destroy(c):
-        C.zcert_destroy(ptop('zcert_t', c))
-    return ffi.gc(cert, destroy)
+    """Constructor, accepts public/secret key pair from caller
+    """
+    return ffi.gc(C.zcert_new_from(public_key, secret_key), destroy)
 
 
-# why don't these work? -mp
-# public_key = C.zcert_public_key
-# secret_key = C.zcert_secret_key
-public_txt = C.zcert_public_txt
-secret_txt = C.zcert_secret_txt
-set_meta = nullable(C.zcert_set_meta)
-meta = C.zcert_meta
-load = C.zcert_load
-save = C.zcert_save
-save_public = C.zcert_save_public
-apply = C.zcert_apply
-dup = C.zcert_dup
-eq = C.zcert_eq
-dump = C.zcert_dump
-test = C.zcert_test
+@cdef('char * zcert_public_key (zcert_t *self);')
+def public_key(cert):
+    """Return public part of key pair as 32-byte binary string
+    """
+    return C.zcert_public_key(cert)
+
+
+@cdef('char * zcert_secret_key (zcert_t *self);')
+def secret_key(cert):
+    """Return secret part of key pair as 32-byte binary string
+    """
+    return C.zcert_secret_key(cert)
+
+
+@cdef('char * zcert_public_txt (zcert_t *self);')
+def public_txt(cert):
+    """
+    Return public part of key pair as Z85 armored string
+    """
+    return C.zcert_public_txt(cert)
+
+
+@cdef('char * zcert_secret_txt (zcert_t *self);')
+def secret_txt(cert):
+    """
+    Return secret part of key pair as Z85 armored string
+    """
+    return C.zcert_secret_txt(cert)
+
+
+@cdef('void zcert_set_meta (zcert_t *self, char *name, char *format, ...);')
+def set_meta(self, name, fmt):
+    """
+    Set certificate metadata from formatted string.
+    """
+    return nullable(C.zcert_set_meta)
+
+
+@cdef('char * zcert_meta (zcert_t *self, char *name);')
+def meta(cert, name):
+    """
+    Get metadata value from certificate; if the metadata value doesn
+    exist, returns NULL.
+    """
+    return C.zcert_meta(cert, meta)
+
+
+@cdef('zcert_t * zcert_load (char *filename, ...);')
+def load(filename):
+    """
+    Load certificate from file (constructor) The filename is treated
+    as a printf format specifier.
+    """
+    return  C.zcert_load(filename)
+
+
+@cdef('int zcert_save (zcert_t *self, char *filename, ...);')
+def save(cert, filename):
+    """
+    Save full certificate (public + secret) to file for persistent
+    storage This creates one public file and one secret file (filename
+    + "_secret").  The filename is treated as a printf format
+    specifier.
+    """
+    return  C.zcert_save(cert, filename)
+
+
+
+
+@cdef('int zcert_save_public (zcert_t *self, char *filename, ...);')
+def save_public(cert, filename):
+    """
+    Save public certificate only to file for persistent storage
+    The filename is treated as a printf format specifier.
+    """
+    return C.zcert_save_public(cert, filename)
+
+
+@cdef('void zcert_apply (zcert_t *self, void *zocket);')
+def apply(cert, zocket):
+    """
+    Apply certificate to socket, i.e. use for CURVE security on socket.
+    If certificate was loaded from public file, the secret key will be
+    undefined, and this certificate will not work successfully.
+    """
+    return C.zcert_apply(cert, zocket)
+
+
+@cdef('zcert_t * zcert_dup (zcert_t *self);')
+def dup(cert):
+    """Return copy of certificate
+    """
+    return C.zcert_dup(cert)
+
+
+@cdef('bool zcert_eq (zcert_t *self, zcert_t *compare);')
+def eq(cert, compare):
+    """Return true if two certificates have the same keys
+    """
+    return C.zcert_eq(cert, compare)
+

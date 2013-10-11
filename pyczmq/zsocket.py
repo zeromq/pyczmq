@@ -1,7 +1,7 @@
-from pyczmq._cffi import C, ffi
+from pyczmq._cffi import C, ffi, cdef
 
 
-ffi.cdef('void zsocket_destroy (zctx_t *self, void *socket);')
+@cdef('void zsocket_destroy (zctx_t *self, void *socket);')
 def destroy(ctx, socket):
     """Destroy a socket within our CZMQ context.
 
@@ -13,7 +13,7 @@ def destroy(ctx, socket):
     return C.zsocket_destroy(ctx, socket)
 
 
-ffi.cdef('void * zsocket_new (zctx_t *self, int type);')
+@cdef('void * zsocket_new (zctx_t *self, int type);')
 def new(ctx, typ):
     """
     Create a new socket within our CZMQ context, replaces zmq_socket.
@@ -24,7 +24,7 @@ def new(ctx, typ):
     return ffi.gc(C.zsocket_new(ctx, typ), lambda s: destroy(ctx, s))
 
 
-ffi.cdef('int zsocket_bind (void *socket, const char *format, ...);')
+@cdef('int zsocket_bind (void *socket, const char *format, ...);')
 def bind(sock, fmt):
     """
     Bind a socket to a formatted endpoint. If the port is specified as
@@ -36,7 +36,7 @@ def bind(sock, fmt):
     return C.zsocket_bind(sock, fmt)
 
 
-ffi.cdef('int zsocket_unbind (void *socket, const char *format, ...);')
+@cdef('int zsocket_unbind (void *socket, const char *format, ...);')
 def unbind(sock, fmt):
     """
     Unbind a socket from a formatted endpoint.  Returns 0 if OK, -1 if
@@ -45,7 +45,7 @@ def unbind(sock, fmt):
     return C.zsocket_unbind(sock, fmt)
 
 
-ffi.cdef('int zsocket_connect (void *socket, const char *format, ...);')
+@cdef('int zsocket_connect (void *socket, const char *format, ...);')
 def connect(sock, fmt):
     """
     Connect a socket to a formatted endpoint Returns 0 if OK, -1 if
@@ -54,7 +54,7 @@ def connect(sock, fmt):
     return C.zsocket_connect(sock, fmt)
 
 
-ffi.cdef('int zsocket_disconnect (void *socket, const char *format, ...);')
+@cdef('int zsocket_disconnect (void *socket, const char *format, ...);')
 def disconnect(sock, fmt):
     """
     Disonnect a socket from a formatted endpoint Returns 0 if OK, -1
@@ -63,7 +63,7 @@ def disconnect(sock, fmt):
     return C.zsocket_disconnect(sock, fmt)
 
 
-ffi.cdef('bool zsocket_poll (void *socket, int msecs);')
+@cdef('bool zsocket_poll (void *socket, int msecs);')
 def poll(sock, msecs):
     """
     Poll for input events on the socket. Returns TRUE if there is input
@@ -72,7 +72,7 @@ def poll(sock, msecs):
     return C.zsocket_poll(sock, msecs)
 
 
-ffi.cdef('char * zsocket_type_str (void *socket);')
+@cdef('char * zsocket_type_str (void *socket);')
 def type_str(sock):
     """Returns socket type as printable constant string"""
     return C.zsocket_type_str(sock)

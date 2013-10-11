@@ -1,20 +1,6 @@
 from pyczmq._cffi import ffi, C, ptop
 
-ffi.cdef('''
-typedef struct _zloop_t zloop_t;
-
-typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);
-
-//  Register pollitem with the reactor. When the pollitem is ready, will call
-//  the handler, passing the arg. Returns 0 if OK, -1 if there was an error.
-//  If you register the pollitem more than once, each instance will invoke its
-//  corresponding handler.
-
-''')
-
-POLLIN = 1
-POLLOUT = 2
-POLLERR = 4
+ffi.cdef('typedef struct _zloop_t zloop_t;')
 
 def item(**kwargs):
     """
@@ -42,7 +28,11 @@ ffi.cdef('int zloop_poller (zloop_t *self, zmq_pollitem_t *item,'
          ' zloop_fn handler, void *arg);')
 def poller(p, item, handler, arg=None):
     """
-    Register a new item with the loop.
+    Register pollitem with the reactor. When the pollitem is ready, will call
+    the handler, passing the arg. Returns 0 if OK, -1 if there was an error.
+    If you register the pollitem more than once, each instance will invoke its
+    corresponding handler.
+
     """
     return C.zloop_poller(p, item, handler, ffi.new_handle(arg))
 

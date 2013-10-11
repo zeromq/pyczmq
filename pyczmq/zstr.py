@@ -1,8 +1,7 @@
-from pyczmq._cffi import C, ffi, tostr
+from pyczmq._cffi import C, ffi, cdef
 
 
-ffi.cdef('char * zstr_recv (void *socket);')
-@tostr
+@cdef('char * zstr_recv (void *socket);', returns_string=True)
 def recv(sock):
     """
     Receive a string off a socket, caller must free it
@@ -10,8 +9,7 @@ def recv(sock):
     return C.zstr_recv(sock)
 
 
-ffi.cdef('char * zstr_recv_nowait (void *socket);')
-@tostr
+@cdef('char * zstr_recv_nowait (void *socket);', returns_string=True)
 def recv_nowait(sock):
     """
     Receive a string off a socket if socket had input waiting
@@ -19,7 +17,7 @@ def recv_nowait(sock):
     return C.zstr_recv_nowait(sock)
 
 
-ffi.cdef('int zstr_send (void *socket, const char *format, ...);')
+@cdef('int zstr_send (void *socket, const char *format, ...);')
 def send(sock, fmt):
     """
     Send a formatted string to a socket
@@ -27,7 +25,7 @@ def send(sock, fmt):
     C.zstr_send(sock, fmt)
 
 
-ffi.cdef('int zstr_sendm (void *socket, const char *format, ...);')
+@cdef('int zstr_sendm (void *socket, const char *format, ...);')
 def sendm(sock, fmt):
     """
     Send a formatted string to a socket, with MORE flag
@@ -35,7 +33,7 @@ def sendm(sock, fmt):
     return C.zstr_sendm(sock, fmt)
 
 
-ffi.cdef('int zstr_sendx (void *socket, const char *string, ...);')
+@cdef('int zstr_sendx (void *socket, const char *string, ...);')
 def sendx(sock, string):
     """
     Send a series of strings (until NULL) as multipart data
@@ -44,7 +42,7 @@ def sendx(sock, string):
     return C.zstr_sendx(sock, string)
 
 
-ffi.cdef('int zstr_recvx (void *socket, char **string_p, ...);')
+@cdef('int zstr_recvx (void *socket, char **string_p, ...);')
 def recvx(sock, string_p):
     """
     Receive a series of strings (until NULL) from multipart data
@@ -56,4 +54,4 @@ def recvx(sock, string_p):
     return C.zstr_recvx(sock, string_p)
 
 
-ffi.cdef('int zstr_test (bool verbose);')
+cdef('int zstr_test (bool verbose);')

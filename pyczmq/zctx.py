@@ -1,13 +1,10 @@
-from pyczmq._cffi import C, ffi, ptop, nullable
+from pyczmq._cffi import C, ffi, cdef, ptop
 
 
-ffi.cdef('''
-//  Opaque class structure
-typedef struct _zctx_t zctx_t;
-''')
+cdef('typedef struct _zctx_t zctx_t;')
 
 
-ffi.cdef('void zctx_destroy (zctx_t **self_p);')
+@cdef('void zctx_destroy (zctx_t **self_p);')
 def destroy(ctx):
     """
     Destroy context and all sockets in it
@@ -15,7 +12,7 @@ def destroy(ctx):
     return C.zctx_destroy(ptop('zctx_t', ctx))
 
 
-ffi.cdef('zctx_t * zctx_new (void);')
+@cdef('zctx_t * zctx_new (void);')
 def new():
     """
     Create new context.
@@ -23,7 +20,7 @@ def new():
     return ffi.gc(C.zctx_new(), destroy)
 
 
-ffi.cdef('void zctx_set_iothreads (zctx_t *self, int iothreads);')
+@cdef('void zctx_set_iothreads (zctx_t *self, int iothreads);')
 def set_iothreads(ctx, iothreads):
     """
     Raise default I/O threads from 1, for crazy heavy applications
@@ -34,7 +31,7 @@ def set_iothreads(ctx, iothreads):
     return C.zctx_set_iothreads(ctx, iothreads)
 
 
-ffi.cdef('void zctx_set_linger (zctx_t *self, int linger);')
+@cdef('void zctx_set_linger (zctx_t *self, int linger);')
 def set_linger(ctx, linger):
     """
     Set msecs to flush sockets when closing them, see the ZMQ_LINGER
@@ -45,7 +42,7 @@ def set_linger(ctx, linger):
     return C.zctx_set_linger(ctx, linger)
 
 
-ffi.cdef('void zctx_set_pipehwm (zctx_t *self, int pipehwm);')
+@cdef('void zctx_set_pipehwm (zctx_t *self, int pipehwm);')
 def set_pipehwm(ctx, pipehwm):
     """
     Set initial high-water mark for inter-thread pipe sockets. Note that
@@ -59,7 +56,7 @@ def set_pipehwm(ctx, pipehwm):
     
 
 
-ffi.cdef('void zctx_set_sndhwm (zctx_t *self, int sndhwm);')
+@cdef('void zctx_set_sndhwm (zctx_t *self, int sndhwm);')
 def set_sndhwm(ctx, sndhwm):
     """
     Set initial send HWM for all new normal sockets created in context.
@@ -69,7 +66,7 @@ def set_sndhwm(ctx, sndhwm):
     return C.zctx_set_sndhwm(ctx, sndhwm)
 
 
-ffi.cdef('void zctx_set_rcvhwm (zctx_t *self, int rcvhwm);')
+@cdef('void zctx_set_rcvhwm (zctx_t *self, int rcvhwm);')
 def set_rcvhwm(ctx, rcvhwm):
     """
     Set initial receive HWM for all new normal sockets created in context.
@@ -79,8 +76,7 @@ def set_rcvhwm(ctx, rcvhwm):
     return C.zctx_set_rcvhwm(ctx, rcvhwm)
 
 
-ffi.cdef('void * zctx_underlying (zctx_t *self);')
-@nullable
+@cdef('void * zctx_underlying (zctx_t *self);', nullable=True)
 def underlying(ctx):
     """
     Return low-level 0MQ context object, will be NULL before first socket
@@ -89,7 +85,7 @@ def underlying(ctx):
     return C.zctx_underlying(ctx)
 
 
-ffi.cdef('extern volatile int zctx_interrupted;')
+cdef('extern volatile int zctx_interrupted;')
 """
 Global signal indicator, TRUE when user presses Ctrl-C or the process
 gets a SIGTERM signal.
@@ -97,7 +93,4 @@ gets a SIGTERM signal.
 interrupted = C.zctx_interrupted
 
 
-ffi.cdef('int zctx_test (bool verbose);')
-def test(verbose):
-    """Self test of this class"""
-    return C.zctx_test(verbose)
+cdef('int zctx_test (bool verbose);')

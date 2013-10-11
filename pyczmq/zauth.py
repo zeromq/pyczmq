@@ -1,18 +1,16 @@
-from pyczmq._cffi import C, ffi
-
-ffi.cdef('''
-//  Opaque class structure
-typedef struct _zauth_t zauth_t;
-''')
+from pyczmq._cffi import C, ffi, cdef
 
 
-ffi.cdef('void zauth_destroy (zauth_t **self_p);')
+cdef('typedef struct _zauth_t zauth_t;')
+
+
+@cdef('void zauth_destroy (zauth_t **self_p);')
 def destroy(auth):
     """ Destructor """
     return C.zauth_destroy(ptop('zauth_t', auth))
 
 
-ffi.cdef(' zauth_t * zauth_new (zctx_t *ctx);')
+@cdef(' zauth_t * zauth_new (zctx_t *ctx);')
 def new(ctx):
     """
     Install authentication for the specified context. Returns a new
@@ -26,7 +24,7 @@ def new(ctx):
 
 
 
-ffi.cdef('void zauth_allow (zauth_t *self, char *address);')
+@cdef('void zauth_allow (zauth_t *self, char *address);')
 def allow(auth, addr):
     """
     Allow (whitelist) a single IP address. For NULL, all clients from
@@ -39,7 +37,7 @@ def allow(auth, addr):
     return C.zauth_allow(auth, addr)
 
 
-ffi.cdef('void zauth_deny (zauth_t *self, char *address);')
+@cdef('void zauth_deny (zauth_t *self, char *address);')
 def deny(auth, addr):
     """
     Deny (blacklist) a single IP address. For all security mechanisms,
@@ -51,8 +49,8 @@ def deny(auth, addr):
     return C.zauth_deny(auth, addr)
 
 
-ffi.cdef('void zauth_configure_plain (zauth_t *self,'
-         ' char *domain, char *filename, ...);')
+@cdef('void zauth_configure_plain (zauth_t *self,'
+      ' char *domain, char *filename, ...);')
 def configure_plain(auth, domain, filename):
     """
     Configure PLAIN authentication for a given domain. PLAIN
@@ -64,8 +62,8 @@ def configure_plain(auth, domain, filename):
     return C.zauth_configure_plain(auth, domain, filename)
 
 
-ffi.cdef('void zauth_configure_curve (zauth_t *self,'
-         ' char *domain, char *location, ...);')
+@cdef('void zauth_configure_curve (zauth_t *self,'
+      ' char *domain, char *location, ...);')
 def configure_curve(auth, domain, location):
     """
     Configure CURVE authentication for a given domain. CURVE
@@ -79,13 +77,13 @@ def configure_curve(auth, domain, location):
     return C.zauth_configure_curve(auth, domain, location)
 
 
-ffi.cdef('void zauth_set_verbose (zauth_t *self, bool verbose);')
+@cdef('void zauth_set_verbose (zauth_t *self, bool verbose);')
 def set_verbose(auth, verbose):
     """Enable verbose tracing of commands and activity"""
     return C.zauth_set_verbose(auth, verbose)
 
     
-ffi.cdef(' int zauth_test (bool verbose);')
+@cdef(' int zauth_test (bool verbose);')
 def test(verbose):
     """Selftest"""
     return C.zauth_test(verbose)

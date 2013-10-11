@@ -18,8 +18,23 @@ def ptop(typ, val):
     ptop[0] = val
     return ptop
 
+
 def tostr(func):
     def inner(*args):
         return ffi.string(func(*args))
     return inner
+
+
+def cdef(decl, returns_string=False, nullable=False):
+    ffi.cdef(decl)
+    def wraps(f):
+        def inner_f(*args):
+            val = f(*args)
+            if returns_string:
+                return ffi.string(val)
+            if nullable and val == ffi.NULL:
+                return None
+            return val
+        return inner_f
+    return wraps
 
