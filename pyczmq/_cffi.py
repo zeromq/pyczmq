@@ -1,3 +1,4 @@
+import inspect
 from functools import wraps
 from cffi import FFI
 
@@ -37,6 +38,20 @@ def cdef(decl, returns_string=False, nullable=False):
             if nullable and val == ffi.NULL:
                 return None
             return val
+
+        args, varargs, varkw, defaults = inspect.getargspec(f)
+        defaults = () if defaults is None else defaults
+        defaults = ["\"{}\"".format(a) if type(a) == str else a for a in defaults]
+        l = ["{}={}".format(arg, defaults[(idx+1)*-1]) 
+             if len(defaults)-1 >= idx else 
+             arg for idx, arg in enumerate(reversed(list(args)))]
+        if varargs:
+            l.append('*' + varargs)
+        if varkw:
+            l.append('**' + varkw)
+        doc = "{}({})\n{}".format(f.__name__, ', '.join(reversed(l)), f.__doc__)
+        inner_f.__doc__ = doc
         return inner_f
     return wrap
+
 
