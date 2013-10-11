@@ -13,6 +13,9 @@ from pyczmq import (
 
 
 class Frame(object):
+    """
+    Object wrapper around a zframe
+    """
     
     __slots__ = ('frame',)
 
@@ -50,6 +53,9 @@ class Frame(object):
 
 
 class Msg(object):
+    """
+    Object wrapper around a zmsg
+    """
 
     __slots__ = ('msg',)
 
@@ -161,7 +167,10 @@ class Socket(object):
         return '<Socket %s>' % zsocket.type_str(self.sock)
 
 
-class Context(object):
+class Ctx(object):
+    """
+    Object wrapper around a zctx
+    """
 
     def __init__(self, iothreads=1):
         self.ctx = zctx.new()
