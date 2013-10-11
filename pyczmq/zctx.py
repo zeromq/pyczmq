@@ -1,7 +1,7 @@
 from pyczmq._cffi import C, ffi, cdef, ptop
 
 __doc__ = """
-The zctx class wraps ØMQ contexts. It manages open sockets in the
+The zctx class wraps 0MQ contexts. It manages open sockets in the
 context and automatically closes these before terminating the
 context. It provides a simple way to set the linger timeout on
 sockets, and configure contexts for number of I/O threads. Sets-up
@@ -14,7 +14,7 @@ The zctx class has these main features:
 
   - Automatically configures sockets with a ZMQ_LINGER timeout you can
     define, and which defaults to zero. The default behavior of zctx
-    is therefore like ØMQ/2.0, immediate termination with loss of any
+    is therefore like 0MQ/2.0, immediate termination with loss of any
     pending messages. You can set any linger timeout you like by
     calling the zctx_set_linger() method.
 

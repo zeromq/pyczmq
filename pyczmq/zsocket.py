@@ -1,8 +1,8 @@
 from pyczmq._cffi import C, ffi, cdef
 
 __doc__ = """
-The zsocket class provides helper functions for ØMQ sockets. It
-doesn't wrap the ØMQ socket type, to avoid breaking all libzmq
+The zsocket class provides helper functions for 0MQ sockets. It
+doesn't wrap the 0MQ socket type, to avoid breaking all libzmq
 socket-related calls.
 """
 

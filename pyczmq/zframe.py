@@ -1,5 +1,15 @@
 from __future__ import print_function
 
+__doc__ = """
+The zframe class provides methods to send and receive single message
+frames across 0MQ sockets. A frame corresponds to one zmq_msg_t. When
+you read a frame from a socket, the zframe_more() method indicates if
+the frame is part of an unfinished multipart message. The zframe_send
+method normally destroys the frame, but with the ZFRAME_REUSE flag,
+you can send the same frame many times. Frames are binary, and this
+class has no special support for text data.
+"""
+
 from pyczmq._cffi import C, ffi, tostr
 
 ffi.cdef('''
