@@ -1,5 +1,18 @@
 from pyczmq._cffi import C, ffi, ptop, cdef
 
+__doc__ = """
+The zbeacon class implements a peer-to-peer discovery service for
+local networks. A beacon can broadcast and/or capture service
+announcements using UDP messages on the local area network. This
+implementation uses IPv4 UDP broadcasts. You can define the format of
+your outgoing beacons, and set a filter that validates incoming
+beacons. Beacons are sent and received asynchronously in the
+background. The zbeacon API provides a incoming beacons on a ZeroMQ
+socket (the pipe) that you can configure, poll on, and receive
+messages on. Incoming beacons are always delivered as two frames: the
+ipaddress of the sender (a string), and the beacon data itself
+(binary, as published).
+"""
 
 cdef('typedef struct _zbeacon_t zbeacon_t;')
 

@@ -52,7 +52,7 @@ def cdef(decl, returns_string=False, nullable=False):
             l.append('*' + varargs)
         if varkw:
             l.append('**' + varkw)
-        doc = "{}({})\n{}".format(f.__name__, ', '.join(reversed(l)), f.__doc__)
+        doc = "{}({})\n\nC: ``{}``\n\n{}".format(f.__name__, ', '.join(reversed(l)), decl, f.__doc__)
         inner_f.__doc__ = doc
         return inner_f
     return wrap

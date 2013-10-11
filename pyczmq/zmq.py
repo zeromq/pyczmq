@@ -328,6 +328,7 @@ ffi.cdef('int zmq_sendiov (void *s, struct iovec *iov, size_t count, int flags);
 ffi.cdef('int zmq_recviov (void *s, struct iovec *iov, size_t *count, int flags);')
 
 
+# TODO:mp Windoze
 ffi.cdef('''
 typedef struct
 {
@@ -347,7 +348,6 @@ def pollitem(socket=None, fd=0, events=0, revents=0):
     """
     return ffi.new('zmq_pollitem_t*', 
                    dict(socket=socket, fd=fd, events=events, revents=revents))
-
 
 
 ffi.cdef('int zmq_poll (zmq_pollitem_t *items, int nitems, long timeout);')

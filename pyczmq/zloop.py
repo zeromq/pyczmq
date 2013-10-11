@@ -1,5 +1,6 @@
 from pyczmq._cffi import ffi, C, ptop
 
+
 ffi.cdef('typedef struct _zloop_t zloop_t;')
 ffi.cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
 
