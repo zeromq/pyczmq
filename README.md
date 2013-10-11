@@ -70,9 +70,9 @@ yourself with zmsg.destroy or zframe.destroy.
 Functionality is also encapsulated in a number of optional helper
 classes to make a more "object oriented" API, if you're into that kind
 of thing.  Types included are 'Context', 'Socket', 'Frame', 'Msg',
-'Loop' and 'Beacon'.  These classes also try to quack more
+(and TODO:) 'Loop' and 'Beacon'.  These classes also try to quack more
 pythonically than the underlying function api and some of the
-ownership issues are (hopefully) hidden.  For example:
+ownership issues are (hopefully) hidden.  For example::
 
     ctx = Context()
     pub = ctx.socket('PUB')

@@ -1,9 +1,9 @@
-from pyczmq import zctx, zsocket, zstr
+from pyczmq import zmq, zctx, zsocket, zstr
 
 def test_zsocket():
     ctx = zctx.new()
-    push = zsocket.new(ctx, zsocket.PUSH)
-    pull = zsocket.new(ctx, zsocket.PULL)
+    push = zsocket.new(ctx, zmq.PUSH)
+    pull = zsocket.new(ctx, zmq.PULL)
     zsocket.bind(push, 'inproc://test')
     zsocket.connect(pull, 'inproc://test')
     zstr.send(push, 'foo')

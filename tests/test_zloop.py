@@ -1,9 +1,9 @@
-from pyczmq import ffi, zctx, zsocket, zstr, zloop
+from pyczmq import ffi, zmq, zctx, zsocket, zstr, zloop
 
 def test_zloop():
     ctx = zctx.new()
-    p = zsocket.new(ctx, zsocket.PUSH)
-    u = zsocket.new(ctx, zsocket.PULL)
+    p = zsocket.new(ctx, zmq.PUSH)
+    u = zsocket.new(ctx, zmq.PULL)
     zsocket.bind(p, 'inproc://lkj')
     zsocket.connect(u, 'inproc://lkj')
 

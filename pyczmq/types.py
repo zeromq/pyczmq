@@ -1,5 +1,15 @@
-import new
-from pyczmq import _cffi, zctx, zsocket, zsockopt, zstr, zframe, zmsg, zbeacon, zloop
+from pyczmq import (
+    _cffi,
+    zmq,
+    zctx,
+    zsocket,
+    zsockopt,
+    zstr,
+    zframe,
+    zmsg,
+    zbeacon,
+    zloop,
+    )
 
 
 class Frame(object):
@@ -159,7 +169,7 @@ class Context(object):
     
     def socket(self, typ):
         if isinstance(typ, basestring):
-            typ = zsocket.types[typ]
+            typ = zmq.types[typ]
         return Socket(self.ctx, typ)
 
 

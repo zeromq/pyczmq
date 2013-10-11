@@ -1,5 +1,5 @@
 import pyczmq
-from pyczmq import zctx, zsocket, zsockopt, zmsg, zframe, ffi
+from pyczmq import zmq, zctx, zsocket, zsockopt, zmsg, zframe, ffi
 
 def test_zmsg():
     m = zmsg.new()
@@ -14,8 +14,8 @@ def test_zmsg():
     assert zframe.data(zmsg.last(m)) == 'ding'
 
     ctx = zctx.new()
-    p = zsocket.new(ctx, zsocket.PUB)
-    u = zsocket.new(ctx, zsocket.SUB)
+    p = zsocket.new(ctx, zmq.PUB)
+    u = zsocket.new(ctx, zmq.SUB)
     zsockopt.set_subscribe(u, '')
     zsocket.bind(p, 'inproc://qer')
     zsocket.connect(u, 'inproc://qer')
