@@ -1,4 +1,4 @@
-from pyczmq._cffi import ffi, Z
+from pyczmq._cffi import ffi, Z, cdef
 
 IO_THREADS = 1
 MAX_SOCKETS = 2
@@ -116,7 +116,7 @@ PLAIN = 1
 CURVE = 2
 
 
-ffi.cdef('int zmq_errno (void);')
+@cdef('int zmq_errno (void);')
 def errno():
     """
     This function retrieves the errno as it is known to 0MQ
@@ -128,7 +128,7 @@ def errno():
     return Z.zmq_errno()
 
 
-ffi.cdef('void zmq_version (int *major, int *minor, int *patch);')
+@cdef('void zmq_version (int *major, int *minor, int *patch);')
 def version():
     """Returns the tuple (major, minor, patch) of the current zmq
     version.
@@ -140,7 +140,7 @@ def version():
     return (major[0], minor[0], patch[0])
 
 
-ffi.cdef('const char *zmq_strerror (int errnum);')
+@cdef('const char *zmq_strerror (int errnum);')
 def strerror(num):
     """
     Resolves system errors and 0MQ errors to human-readable string.
@@ -148,104 +148,105 @@ def strerror(num):
     return Z.zmq_strerror(num)
 
 
-ffi.cdef('void *zmq_ctx_new (void);')
+@cdef('void *zmq_ctx_new (void);')
 def ctx_new():
     return Z.zmq_ctx_new()
 
 
-ffi.cdef('int zmq_ctx_term (void *context);')
+@cdef('int zmq_ctx_term (void *context);')
 def ctx_term(ctx):
     return Z.zmq_ctx_term(ctx)
 
 
-ffi.cdef('int zmq_ctx_shutdown (void *ctx_);')
+@cdef('int zmq_ctx_shutdown (void *ctx_);')
 def ctx_shutdown(ctx):
     return Z.zmq_ctx_shutdown(ctx)
 
-ffi.cdef('int zmq_ctx_set (void *context, int option, int optval);')
+
+@cdef('int zmq_ctx_set (void *context, int option, int optval);')
 def ctx_set(ctx, opt, val):
     return Z.zmq_ctx_set(ctx, opt, val)
 
 
-ffi.cdef('int zmq_ctx_get (void *context, int option);')
+@cdef('int zmq_ctx_get (void *context, int option);')
 def ctx_get(ctx, opt):
     return Z.zmq_ctx_get(ctx, opt)
 
 
-ffi.cdef('''
+@cdef('''
 typedef struct zmq_msg_t {unsigned char _ [32];} zmq_msg_t;
 
 typedef void (zmq_free_fn) (void *data, void *hint);
 ''')
 
 
-ffi.cdef('int zmq_msg_init (zmq_msg_t *msg);')
+@cdef('int zmq_msg_init (zmq_msg_t *msg);')
 def msg_init(msg):
     return Z.zmq_msg_init(msg)
 
 
-ffi.cdef('int zmq_msg_init_size (zmq_msg_t *msg, size_t size);')
+@cdef('int zmq_msg_init_size (zmq_msg_t *msg, size_t size);')
 def msg_init_size(msg, size):
     return Z.zmq_msg_init_size(msg, size)
 
 
-ffi.cdef('int zmq_msg_init_data (zmq_msg_t *msg, void *data,'
+@cdef('int zmq_msg_init_data (zmq_msg_t *msg, void *data,'
          ' size_t size, zmq_free_fn *ffn, void *hint);')
 def msg_init_data(msg, data, size, ffn, hint):
     return Z.zmq_msg_init_data(msg, data, size, ffn, hint)
 
 
-ffi.cdef('int zmq_msg_send (zmq_msg_t *msg, void *s, int flags);')
+@cdef('int zmq_msg_send (zmq_msg_t *msg, void *s, int flags);')
 def msg_send(msg, s, flags):
     return Z.zmq_msg_send(msg, s, flags)
 
 
-ffi.cdef('int zmq_msg_recv (zmq_msg_t *msg, void *s, int flags);')
+@cdef('int zmq_msg_recv (zmq_msg_t *msg, void *s, int flags);')
 def msg_recv(msg, s, flags):
     return Z.zmq_msg_recv(msg, s, flags)
 
 
-ffi.cdef('int zmq_msg_close (zmq_msg_t *msg);')
+@cdef('int zmq_msg_close (zmq_msg_t *msg);')
 def msg_close(msg):
     return Z.zmq_msg_close(msg)
 
 
-ffi.cdef('int zmq_msg_move (zmq_msg_t *dest, zmq_msg_t *src);')
+@cdef('int zmq_msg_move (zmq_msg_t *dest, zmq_msg_t *src);')
 def msg_move(dest, src):
     return Z.zmq_msg_move(dest, src)
 
 
-ffi.cdef('int zmq_msg_copy (zmq_msg_t *dest, zmq_msg_t *src);')
+@cdef('int zmq_msg_copy (zmq_msg_t *dest, zmq_msg_t *src);')
 def msg_copy(dest, src):
     return Z.zmq_msg_copy(dest, src)
 
 
-ffi.cdef('void *zmq_msg_data (zmq_msg_t *msg);')
+@cdef('void *zmq_msg_data (zmq_msg_t *msg);')
 def msg_data(msg):
     return Z.zmq_msg_data(msg)
 
 
-ffi.cdef('size_t zmq_msg_size (zmq_msg_t *msg);')
+@cdef('size_t zmq_msg_size (zmq_msg_t *msg);')
 def msg_size(msg):
     return Z.zmq_msg_size(msg)
 
 
-ffi.cdef('int zmq_msg_more (zmq_msg_t *msg);')
+@cdef('int zmq_msg_more (zmq_msg_t *msg);')
 def msg_more(msg):
     return Z.zmq_msg_more(msg)
 
 
-ffi.cdef('int zmq_msg_get (zmq_msg_t *msg, int option);')
+@cdef('int zmq_msg_get (zmq_msg_t *msg, int option);')
 def msg_get(msg, opt):
     return Z.zmq_msg_get(msg, opt)
 
 
-ffi.cdef('int zmq_msg_set (zmq_msg_t *msg, int option, int optval);')
+@cdef('int zmq_msg_set (zmq_msg_t *msg, int option, int optval);')
 def msg_set(msg, opt, val):
     return Z.zmq_msg_set(msg, opt, val)
 
 
-ffi.cdef('''
+cdef('''
 typedef struct {
     uint16_t event;
     int32_t  value;
@@ -253,72 +254,72 @@ typedef struct {
 ''')
 
 
-ffi.cdef('void *zmq_socket (void *ctx, int type);')
+@cdef('void *zmq_socket (void *ctx, int type);')
 def socket(ctx, typ):
     return Z.zmq_socket(ctx, typ)
 
 
-ffi.cdef('int zmq_close (void *sock);')
+@cdef('int zmq_close (void *sock);')
 def close(sock):
     return Z.zmq_close(sock)
 
 
-ffi.cdef('int zmq_setsockopt (void *s, int option,'
+@cdef('int zmq_setsockopt (void *s, int option,'
          ' const void *optval, size_t optvallen);')
 def setsockopt(sock, opt, val, len):
     return Z.zmq_setsockopt(sock, opt, val, len)
 
 
-ffi.cdef('int zmq_getsockopt (void *s, int option,'
+@cdef('int zmq_getsockopt (void *s, int option,'
          ' void *optval, size_t *optvallen);')
 def getsockopt(sock, opt, val, len):
     return Z.zmq_getsockopt(sock, opt, val, len)
 
 
-ffi.cdef('int zmq_bind (void *s, const char *addr);')
+@cdef('int zmq_bind (void *s, const char *addr);')
 def bind(sock, addr):
     return Z.zmq_bind(sock, addr)
 
 
-ffi.cdef('int zmq_connect (void *s, const char *addr);')
+@cdef('int zmq_connect (void *s, const char *addr);')
 def connect(sock, addr):
     return Z.zmq_connect(sock, addr)
 
 
-ffi.cdef('int zmq_unbind (void *s, const char *addr);')
+@cdef('int zmq_unbind (void *s, const char *addr);')
 def unbind(sock, addr):
     return Z.zmq_unbind(sock, addr)
 
 
-ffi.cdef('int zmq_disconnect (void *s, const char *addr);')
+@cdef('int zmq_disconnect (void *s, const char *addr);')
 def disconnect(sock, addr):
     return Z.zmq_disconnect(sock, addr)
 
 
-ffi.cdef('int zmq_send (void *s, const void *buf, size_t len, int flags);')
+@cdef('int zmq_send (void *s, const void *buf, size_t len, int flags);')
 def send(sock, buf, len, flags):
     return Z.zmq_send(sock, buf, len, flags)
 
 
-ffi.cdef('int zmq_send_const (void *s, const void *buf, size_t len, int flags);')
+@cdef('int zmq_send_const (void *s, const void *buf, size_t len, int flags);')
 
 
-ffi.cdef('int zmq_recv (void *s, void *buf, size_t len, int flags);')
+@cdef('int zmq_recv (void *s, void *buf, size_t len, int flags);')
 def recv(sock, buf, len, flags):
     return Z.zmq_recv(sock, buf, len, flags)
 
 
-ffi.cdef('int zmq_socket_monitor (void *s, const char *addr, int events);')
+@cdef('int zmq_socket_monitor (void *s, const char *addr, int events);')
 def socket_monitor(sock, addr, events):
     return Z.zmq_socket_monitor(sock, addr, events)
 
 
-ffi.cdef('int zmq_sendmsg (void *s, zmq_msg_t *msg, int flags);')
+@cdef('int zmq_sendmsg (void *s, zmq_msg_t *msg, int flags);')
 def sendmsg(sock, msg, flags):
     return Z.zmq_sendmsg(sock, msg, flags)
 
 
-ffi.cdef('int zmq_recvmsg (void *s, zmq_msg_t *msg, int flags);')
+@cdef('int zmq_recvmsg (void *s, zmq_msg_t *msg, int flags);')
 def recvmsg(sock, msg, flags):
     return Z.zmq_recvmsg(sock, msg, flags)
 
@@ -347,24 +348,25 @@ def pollitem(socket=None, fd=0, events=0, revents=0):
     Must set either socket or fd, if socket is set, fd is ignored.
     """
     return ffi.new('zmq_pollitem_t*', 
-                   dict(socket=socket, fd=fd, events=events, revents=revents))
+                   dict(socket=socket, fd=fd,
+                        events=events, revents=revents))
 
 
-ffi.cdef('int zmq_poll (zmq_pollitem_t *items, int nitems, long timeout);')
+@cdef('int zmq_poll (zmq_pollitem_t *items, int nitems, long timeout);')
 def poll(items, nitem, timeout):
     return Z.zmq_poll(items, nitem, timeout)
 
 
-ffi.cdef('int zmq_proxy (void *frontend, void *backend, void *capture);')
+@cdef('int zmq_proxy (void *frontend, void *backend, void *capture);')
 def proxy(frontend, backend, capture):
     return Z.zmq_proxy(frontend, backend, capture)
 
 
-ffi.cdef('char *zmq_z85_encode (char *dest, uint8_t *data, size_t size);')
+@cdef('char *zmq_z85_encode (char *dest, uint8_t *data, size_t size);')
 def z85_encode(dest, data, size):
     return Z.zmq_z85_encode(dest, data, size)
 
 
-ffi.cdef('uint8_t *zmq_z85_decode (uint8_t *dest, char *string);')
+@cdef('uint8_t *zmq_z85_decode (uint8_t *dest, char *string);')
 def z86_decode(dest, string):
     return Z.zmq_z85_decode(dest, string)
