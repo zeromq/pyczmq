@@ -339,6 +339,17 @@ typedef struct
 ''')
 
 
+def pollitem(socket=None, fd=0, events=0, revents=0):
+    """
+    Helper to create a pollitem object for zmq.poll/zpoller.poller.
+
+    Must set either socket or fd, if socket is set, fd is ignored.
+    """
+    return ffi.new('zmq_pollitem_t*', 
+                   dict(socket=socket, fd=fd, events=events, revents=revents))
+
+
+
 ffi.cdef('int zmq_poll (zmq_pollitem_t *items, int nitems, long timeout);')
 def poll(items, nitem, timeout):
     return Z.zmq_poll(items, nitem, timeout)

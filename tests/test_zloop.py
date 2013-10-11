@@ -8,7 +8,7 @@ def test_zloop():
     zsocket.connect(u, 'inproc://lkj')
 
     l = zloop.new()
-    item = zloop.item(socket=u, fd=0, events=zmq.POLLIN)
+    item = zmq.pollitem(socket=u, events=zmq.POLLIN)
 
     @ffi.callback('zloop_fn')
     def handler(loop, item, arg):

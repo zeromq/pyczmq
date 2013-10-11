@@ -3,12 +3,6 @@ from pyczmq._cffi import ffi, C, ptop
 ffi.cdef('typedef struct _zloop_t zloop_t;')
 ffi.cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
 
-def item(**kwargs):
-    """
-    Helper to create a pollitem object for poller.
-    """
-    return ffi.new('zmq_pollitem_t*', kwargs)
-
 
 ffi.cdef('void zloop_destroy (zloop_t **self_p);')
 def destroy(loop):
