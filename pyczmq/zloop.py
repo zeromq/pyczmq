@@ -58,6 +58,7 @@ def set_tolerant(loop, item):
     """
     return C.zloop_set_tolerant(loop, item)
 
+
 @cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_fn handler, void *arg);')
 def timer(loop, delay, times, handler, arg):
     """
