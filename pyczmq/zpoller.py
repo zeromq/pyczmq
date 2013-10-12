@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi, cdef
+from pyczmq._cffi import C, ffi, cdef, ptop
 
 __doc__ = """
 The zpoller class provides a minimalist interface to ZeroMQ's zmq_poll
@@ -17,12 +17,12 @@ def destroy(poller):
 
 
 @cdef('zpoller_t * zpoller_new (void *reader, ...);')
-def new(*readers):
+def new(reader, *readers):
     """Create new poller"""
-    return ffi.gc(C.zpoller_new(*readers), destroy)
+    return ffi.gc(C.zpoller_new(reader, *readers), destroy)
 
 
-@cdef(' void * zpoller_wait (zpoller_t *self, int timeout);')
+@cdef(' void * zpoller_wait (zpoller_t *self, int timeout);', nullable=True)
 def wait(poller, timeout):
     """
     Poll the registered readers for I/O, return first socket that has input.

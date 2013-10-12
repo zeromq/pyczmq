@@ -6,6 +6,7 @@ ffi = FFI()
 C = ffi.dlopen('czmq')
 Z = ffi.dlopen('zmq')
 
+
 def ptop(typ, val):
     ptop = ffi.new('%s*[1]' % typ)
     ptop[0] = val

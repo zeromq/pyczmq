@@ -5,4 +5,4 @@ def test_zmq():
     version = zmq.version()
     assert version
     assert len(version) == 3
-    assert version[0] >= 4
+    assert version[0] in (4, 3)
