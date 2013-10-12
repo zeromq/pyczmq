@@ -48,7 +48,7 @@ def recv(sock):
     was interrupted. Does a blocking recv, if you want to not block then use
     zframe_recv_nowait().
     """
-    return  C.zframe_recv(sock)
+    return C.zframe_recv(sock)
 
 
 @cdef('zframe_t * zframe_recv_nowait (void *socket);', nullable=True)
@@ -57,7 +57,7 @@ def recv_nowait(sock):
     Receive a new frame off the socket. Returns newly allocated frame, or
     NULL if there was no input waiting, or if the read was interrupted.
     """
-    return  C.zframe_recv_nowait(sock)
+    return C.zframe_recv_nowait(sock)
 
 
 @cdef('int zframe_send (zframe_t **self_p, void *socket, int flags);')
@@ -82,6 +82,7 @@ def data(frame):
     """
     buf = ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
     return buf[:]
+
 
 @cdef('zframe_t * zframe_dup (zframe_t *self);')
 def dup(frame):

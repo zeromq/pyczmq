@@ -44,6 +44,10 @@ class Frame(object):
             return zframe.eq(self.frame, other.frame)
         return zframe.eq(self.frame, other)
 
+    @property
+    def bytes(self):
+        return zframe.data(self.frame)
+
     def destroy(self):
         zframe.destroy(self.frame)
         self.frame = None
@@ -66,7 +70,7 @@ class Frame(object):
         return zframe.set_more(self.frame, val)
 
 
-class Msg(object):
+class Message(object):
     """
     Object wrapper around a zmsg
     """
@@ -78,6 +82,10 @@ class Msg(object):
 
     def __len__(self):
         return zmsg.size(self.msg)
+
+    def destroy(self):
+        zmsg.destroy(self.msg)
+        self.msg = None
 
     def content_size(self):
         return zmsg.content_size(self.msg)
@@ -103,13 +111,13 @@ class Msg(object):
         return zmsg.popstr(self.msg)
 
     def first(self):
-        return zmsg.first(self.msg)
+        return Frame(frame=zmsg.first(self.msg))
 
     def next(self):
-        return zmsg.first(self.msg)
+        return Frame(frame=zmsg.next(self.msg))
 
     def last(self):
-        return zmsg.first(self.msg)
+        return Frame(frame=zmsg.last(self.msg))
 
     def __iter__(self):
         n = self.next()
@@ -150,12 +158,12 @@ class Socket(object):
         return Frame(frame=zframe.recv_nowait(self.sock))
 
     def send_msg(self, msg):
-        if isinstance(msg, Msg):
+        if isinstance(msg, Message):
             msg = msg.msg
         return zmsg.send(self.sock, msg)
 
     def recv_msg(self):
-        return Msg(zmsg.recv(self.sock))
+        return Message(zmsg.recv(self.sock))
 
     def connect(self, endpoint):
         return zsocket.connect(self.sock, endpoint)
@@ -181,7 +189,7 @@ class Socket(object):
         return '<Socket %s>' % zsocket.type_str(self.sock)
 
 
-class Ctx(object):
+class Context(object):
     """
     Object wrapper around a zctx
     """
@@ -199,6 +207,9 @@ class Ctx(object):
 # TODO below
 
 class Loop(object):
+    """
+    Object wrapper around a zloop
+    """
 
     def __init__(self):
         self.loop = zloop.new()
@@ -208,7 +219,14 @@ class Loop(object):
 
     def poller(self, item, handler, arg=None):
         callback = _cffi.ffi.callback('zloop_fn', handler)
-        zloop.poller(self.loop, item, callback, arg)
+        arg_handle = _cffi.ffi.new_handle(arg)
+        zloop.poller(self.loop, item, callback, arg_handle)
+
+    def timer(self, delay, times, handler, arg=None):
+        callback = _cffi.ffi.callback('zloop_fn', handler)
+        arg_handle = _cffi.ffi.new_handle(arg)
+        zloop.timer(self.loop, delay, times, callback, arg_handle)
+
 
 
 class Beacon(object):
