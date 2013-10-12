@@ -1,4 +1,4 @@
-from pyczmq import zmq, zctx, zsocket, zsockopt, zstr, zbeacon, zframe
+from pyczmq import zmq, zctx, zsocket, zstr, zbeacon, zframe
 
 def test_zbeacon():
     ctx = zctx.new()
@@ -19,7 +19,7 @@ def test_zbeacon():
 
     #  Wait for at most 1/2 second if there's no broadcast networking
     beacon_socket = zbeacon.socket(client_beacon)
-    zsockopt.set_rcvtimeo(beacon_socket, 500)
+    zsocket.set_rcvtimeo(beacon_socket, 500)
     ipaddress = zstr.recv(beacon_socket)
     content = zframe.recv(beacon_socket)
     received_port = int(zframe.data(content))

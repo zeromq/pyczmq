@@ -4,7 +4,6 @@ from . import (
     zmq,
     zctx,
     zsocket,
-    zsockopt,
     zstr,
     zpoller,
     zloop,

@@ -1,4 +1,4 @@
-from pyczmq import zmq, zctx, zsocket, zsockopt, zstr, zpoller
+from pyczmq import zmq, zctx, zsocket, zstr, zpoller
 
 
 def test_zpoller():
@@ -8,11 +8,11 @@ def test_zpoller():
     zsocket.bind(p, 'inproc://sdf')
 
     s = zsocket.new(ctx, zmq.SUB)
-    zsockopt.set_subscribe(s, '')
+    zsocket.set_subscribe(s, '')
     zsocket.connect(s, 'inproc://sdf')
 
     s2 = zsocket.new(ctx, zmq.SUB)
-    zsockopt.set_subscribe(s2, '')
+    zsocket.set_subscribe(s2, '')
     zsocket.connect(s2, 'inproc://sdf')
 
     zstr.send(p, 'foo')

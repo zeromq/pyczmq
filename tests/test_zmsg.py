@@ -1,5 +1,5 @@
 import pyczmq
-from pyczmq import zmq, zctx, zsocket, zsockopt, zmsg, zframe, ffi
+from pyczmq import zmq, zctx, zsocket, zmsg, zframe, ffi
 
 
 def test_zmsg():
@@ -24,7 +24,7 @@ def test_zmsg():
     ctx = zctx.new()
     p = zsocket.new(ctx, zmq.PUB)
     u = zsocket.new(ctx, zmq.SUB)
-    zsockopt.set_subscribe(u, '')
+    zsocket.set_subscribe(u, '')
     zsocket.bind(p, 'inproc://qer')
     zsocket.connect(u, 'inproc://qer')
     zmsg.send(m, p)
