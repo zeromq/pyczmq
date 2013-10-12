@@ -76,12 +76,11 @@ def size(frame):
     return C.zframe_size(frame)
 
 
-@cdef('char * zframe_data (zframe_t *self);')
+@cdef('void * zframe_data (zframe_t *self);')
 def data(frame):
     """Return frame data
     """
-    buf = ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
-    return buf[:]
+    return ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
 
 
 @cdef('zframe_t * zframe_dup (zframe_t *self);')

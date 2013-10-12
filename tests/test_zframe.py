@@ -48,7 +48,7 @@ def test_zframe():
     hex_string = zframe.strhex(frame)
     assert(hex_string == "454E44")
 
-    frame_bytes = zframe.data(frame)
+    frame_bytes = zframe.data(frame)[:]
     assert frame_bytes == "END"
 
 
@@ -67,7 +67,7 @@ def test_zframe():
             break
         else:
             assert(zframe.size(frame) == 5)
-            assert zframe.data(frame) == "Hello"
+            assert zframe.data(frame)[:] == "Hello"
         assert(zframe.more(frame))
         zframe.set_more(frame, 0)
         assert(zframe.more(frame) == 0)

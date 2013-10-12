@@ -3,7 +3,6 @@ from pyczmq import (
     zmq,
     zctx,
     zsocket,
-    zsockopt,
     zstr,
     zframe,
     zmsg,
@@ -181,8 +180,8 @@ class Socket(object):
         return zsocket.poll(self.sock, timeout)
 
     def __getattr__(self, name):
-        if name in dir(zsockopt):
-            return lambda *args: getattr(zsockopt, name)(self.sock, *args)
+        if name in dir(zsocket):
+            return lambda *args: getattr(zsocket, name)(self.sock, *args)
         raise AttributeError(name)
 
     def __repr__(self):

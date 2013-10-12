@@ -52,7 +52,7 @@ def noecho(beacon):
     return C.zbeacon_noecho(beacon)
 
 
-@cdef('void zbeacon_publish (zbeacon_t *self, char *transmit, size_t size);')
+@cdef('void zbeacon_publish (zbeacon_t *self, void *transmit, size_t size);')
 def publish(beacon, string):
     """Start broadcasting beacon to peers at the specified interval"""
     return C.zbeacon_publish(beacon, string, len(string))
