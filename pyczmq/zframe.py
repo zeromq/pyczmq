@@ -1,5 +1,5 @@
 from __future__ import print_function
-from pyczmq._cffi import C, cdef
+from pyczmq._cffi import C, cdef, ptop
 
 __doc__ = """
 The zframe class provides methods to send and receive single message
@@ -24,7 +24,7 @@ DONTWAIT = 4
 def destroy(frame):
     """Destroy a frame
     """
-    return C.destroy(ptop('zframe_t', frame))
+    return C.zframe_destroy(ptop('zframe_t', frame))
 
 
 @cdef('zframe_t * zframe_new (const void *data, size_t size);')

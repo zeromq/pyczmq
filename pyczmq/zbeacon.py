@@ -33,11 +33,12 @@ def new(port):
 
 @cdef('char * zbeacon_hostname (zbeacon_t *self);', returns_string=True)
 def hostname(beacon):
+    """Returns the hostname string for this beacon's interface """
     return C.zbeacon_hostname(beacon)
 
 
 @cdef('void zbeacon_set_interval (zbeacon_t *self, int interval);')
-def interval(beacon, interval):
+def set_interval(beacon, interval):
     """Set broadcast interval in milliseconds (default is 1000 msec)
     """
     return C.zbeacon_set_interval(beacon, interval)
