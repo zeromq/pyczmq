@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
   name="pyczmq",
-  version="0.0.2",
+  version="0.0.3",
   packages=find_packages(exclude=['tests.*', 'tests', '.virt']),
 
   tests_require=['nose'],
