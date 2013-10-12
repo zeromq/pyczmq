@@ -16,6 +16,4 @@ from . import (
     zcertstore,
     )
 
-from types import Ctx, Socket, Frame, Msg, Loop, Beacon
-
 

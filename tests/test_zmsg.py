@@ -1,6 +1,7 @@
 import pyczmq
 from pyczmq import zmq, zctx, zsocket, zsockopt, zmsg, zframe, ffi
 
+
 def test_zmsg():
     m = zmsg.new()
     foo = zframe.new('foo')
