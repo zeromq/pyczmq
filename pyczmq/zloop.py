@@ -1,5 +1,12 @@
 from pyczmq._cffi import ffi, C, ptop, cdef
 
+__doc__ = """
+The zloop class provides an event-driven reactor pattern. The reactor
+handles zmq_pollitem_t items (pollers or writers, sockets or fds), and
+once-off or repeated timers. Its resolution is 1 msec. It uses a
+tickless timer to reduce CPU interrupts in inactive processes.
+"""
+
 
 cdef('typedef struct _zloop_t zloop_t;')
 cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')

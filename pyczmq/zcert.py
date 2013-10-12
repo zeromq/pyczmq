@@ -54,12 +54,13 @@ def secret_txt(cert):
     return C.zcert_secret_txt(cert)
 
 
-@cdef('void zcert_set_meta (zcert_t *self, char *name, char *format, ...);')
+@cdef('void zcert_set_meta (zcert_t *self, char *name, char *format, ...);',
+      nullable=True)
 def set_meta(self, name, fmt):
     """
     Set certificate metadata from formatted string.
     """
-    return nullable(C.zcert_set_meta)
+    return C.zcert_set_meta
 
 
 @cdef('char * zcert_meta (zcert_t *self, char *name);')

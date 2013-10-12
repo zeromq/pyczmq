@@ -1,5 +1,11 @@
 from pyczmq._cffi import C, ffi, cdef
 
+__doc__ = """
+The zpoller class provides a minimalist interface to ZeroMQ's zmq_poll
+API, for the very common case of reading from a number of sockets. It
+does not provide polling for output, nor polling on file handles. If
+you need either of these, use the zmq_poll API directly.
+"""
 
 cdef('typedef struct _zpoller_t zpoller_t;')
 

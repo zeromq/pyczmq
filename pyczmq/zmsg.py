@@ -199,4 +199,4 @@ def dup(msg):
     Create copy of message, as new message object. Returns a fresh zmsg_t
     object, or NULL if there was not enough heap memory.
     """
-    return nullable(C.zmsg_dup)
+    return C.zmsg_dup(msg)
