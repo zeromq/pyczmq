@@ -1,5 +1,5 @@
 from __future__ import print_function
-from pyczmq._cffi import C, cdef
+from pyczmq._cffi import C, cdef, ffi, ptop
 
 __doc__ = """
 The zframe class provides methods to send and receive single message
@@ -24,7 +24,7 @@ DONTWAIT = 4
 def destroy(frame):
     """Destroy a frame
     """
-    return C.destroy(ptop('zframe_t', frame))
+    return C.zframe_destroy(ptop('zframe_t', frame))
 
 
 @cdef('zframe_t * zframe_new (const void *data, size_t size);')
@@ -41,7 +41,7 @@ def new_empty():
     return C.zframe_new_empty()
 
 
-@cdef('zframe_t * zframe_recv (void *socket);')
+@cdef('zframe_t * zframe_recv (void *socket);', nullable=True)
 def recv(sock):
     """
     Receive frame from socket, returns zframe_t object or NULL if the recv
@@ -51,7 +51,7 @@ def recv(sock):
     return  C.zframe_recv(sock)
 
 
-@cdef('zframe_t * zframe_recv_nowait (void *socket);')
+@cdef('zframe_t * zframe_recv_nowait (void *socket);', nullable=True)
 def recv_nowait(sock):
     """
     Receive a new frame off the socket. Returns newly allocated frame, or
@@ -66,7 +66,7 @@ def send(frame, socket, flags):
     Send a frame to a socket, destroy frame after sending.
     Return -1 on error, 0 on success.
     """
-    return C.zframe_send(frame, socket, flags)
+    return C.zframe_send(ptop('zframe_t', frame), socket, flags)
 
 
 @cdef('size_t zframe_size (zframe_t *self);')
@@ -76,12 +76,12 @@ def size(frame):
     return C.zframe_size(frame)
 
 
-@cdef('char * zframe_data (zframe_t *self);', returns_string=True)
+@cdef('char * zframe_data (zframe_t *self);')
 def data(frame):
-    """Return address of frame data
+    """Return frame data
     """
-    return C.zframe_data(frame)
-
+    buf = ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
+    return buf[:]
 
 @cdef('zframe_t * zframe_dup (zframe_t *self);')
 def dup(frame):
@@ -97,7 +97,7 @@ def strhex(frame):
     return C.zframe_strhex(frame)
 
 
-@cdef('char * zframe_strdup (zframe_t *self);')
+@cdef('char * zframe_strdup (zframe_t *self);', returns_string=True)
 def strdup(frame):
     """Return frame data copied into freshly allocated string
     """
@@ -108,7 +108,7 @@ def strdup(frame):
 def streq(frame, string):
     """Return TRUE if frame body is equal to string, excluding terminator
     """
-    return  C.zframe_streq(frame, string)
+    return C.zframe_streq(frame, string)
 
 
 @cdef('int zframe_more (zframe_t *self);')
@@ -123,7 +123,7 @@ def more(frame):
 @cdef('void zframe_set_more (zframe_t *self, int more);')
 def set_more(frame, more):
     """
-    Set frame MORE indicator (1 or 0). Note this is NOT used when sending 
+    Set frame MORE indicator (1 or 0). Note this is NOT used when sending
     frame to socket, you have to specify flag explicitly.
     """
     return C.zframe_set_more(frame, more)

@@ -1,5 +1,5 @@
-import pyczmq
-from pyczmq import zmq, zctx, zsocket, zsockopt, zmsg, zframe, ffi
+
+from pyczmq import zmq, zctx, zsocket, zsockopt, zmsg, zframe
 
 def test_zmsg():
     m = zmsg.new()
@@ -27,3 +27,4 @@ def test_zmsg():
     assert zframe.data(zmsg.next(n)) == 'foo'
     assert zframe.data(zmsg.next(n)) == 'ding'
     assert zmsg.next(n) is None
+    zmsg.destroy(n)

@@ -16,17 +16,23 @@ class Frame(object):
     """
     Object wrapper around a zframe
     """
-    
+
+    MORE = zframe.MORE
+    REUSE = zframe.REUSE
+    DONTWAIT = zframe.DONTWAIT
+
     __slots__ = ('frame',)
 
     def __init__(self, data=None, frame=None):
         if data is not None:
             self.frame = zframe.new(data)
-        else:
+        elif frame is not None:
             self.frame = frame
+        else:
+            self.frame = zframe.new_empty()
 
     def __str__(self):
-        return zframe.data(self.frame)
+        return zframe.strdup(self.frame)
 
     def __len__(self):
         return zframe.size(self.frame)
@@ -34,7 +40,13 @@ class Frame(object):
     def __eq__(self, other):
         if isinstance(other, str):
             return zframe.streq(self.frame, other)
+        elif isinstance(other, Frame):
+            return zframe.eq(self.frame, other.frame)
         return zframe.eq(self.frame, other)
+
+    def destroy(self):
+        zframe.destroy(self.frame)
+        self.frame = None
 
     def dup(self):
         return zframe.dup(self.frame)
@@ -46,10 +58,12 @@ class Frame(object):
         return zframe.reset(data, len(data))
 
     def more(self):
-        return zframe.more(self.sock)
+        return zframe.more(self.frame)
 
-    def set_more(self, val):
-        return zframe.set_more(self.sock, val)
+    def set_more(self, val=0):
+        if val:
+            val = 1
+        return zframe.set_more(self.frame, val)
 
 
 class Msg(object):
@@ -136,7 +150,7 @@ class Socket(object):
         return Frame(frame=zframe.recv_nowait(self.sock))
 
     def send_msg(self, msg):
-        if isinstance(frame, Msg):
+        if isinstance(msg, Msg):
             msg = msg.msg
         return zmsg.send(self.sock, msg)
 
@@ -175,7 +189,7 @@ class Ctx(object):
     def __init__(self, iothreads=1):
         self.ctx = zctx.new()
         zctx.set_iothreads(self.ctx, iothreads)
-    
+
     def socket(self, typ):
         if isinstance(typ, basestring):
             typ = zmq.types[typ]
@@ -185,7 +199,7 @@ class Ctx(object):
 # TODO below
 
 class Loop(object):
-    
+
     def __init__(self):
         self.loop = zloop.new()
 
@@ -198,6 +212,6 @@ class Loop(object):
 
 
 class Beacon(object):
-    
+
     def __init__(self):
         self.loop = zbeacon.new()
