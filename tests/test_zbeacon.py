@@ -1,11 +1,11 @@
 from pyczmq import zmq, zctx, zsocket, zsockopt, zstr, zbeacon, zframe
 
 def test_zbeacon():
-
     ctx = zctx.new()
+
     #  Create a service socket and bind to an ephemeral port
-    service = zsocket.new(ctx, zmq.PUB)
-    port_nbr = zsocket.bind(service, "tcp:#*:*")
+    service = zsocket.new(ctx, zmq.PUSH)
+    port_nbr = zsocket.bind(service, "inproc://foo")
     
     #  Create beacon to broadcast our service
     announcement = str(port_nbr)
@@ -18,12 +18,10 @@ def test_zbeacon():
     zbeacon.subscribe(client_beacon, '')
 
     #  Wait for at most 1/2 second if there's no broadcast networking
-    zsockopt.set_rcvtimeo(zbeacon.socket(client_beacon), 500)
-
-    ipaddress = zstr.recv(zbeacon.socket(client_beacon))
-
-    if ipaddress:
-        content = zframe.recv(zbeacon.socket(client_beacon))
-        received_port = int(zframe.data(content))
-        assert received_port == port_nbr
-        zframe.destroy(content)
+    beacon_socket = zbeacon.socket(client_beacon)
+    zsockopt.set_rcvtimeo(beacon_socket, 500)
+    ipaddress = zstr.recv(beacon_socket)
+    content = zframe.recv(beacon_socket)
+    received_port = int(zframe.data(content))
+    assert received_port == port_nbr
+    zframe.destroy(content)

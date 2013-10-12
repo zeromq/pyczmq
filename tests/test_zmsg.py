@@ -12,7 +12,13 @@ def test_zmsg():
     assert zmsg.first(m) == bar
     assert zmsg.last(m) == foo
     zmsg.append(m, zframe.new('ding'))
-    assert zframe.data(zmsg.last(m)) == 'ding'
+    d = zframe.dup(zmsg.last(m))
+    assert zframe.data(d)[:] == 'ding'
+
+    # mutate the buffer view
+    zframe.data(d)[:] = 'dong'  
+    assert zframe.data(d)[:] == 'dong'
+    zmsg.append(m, d)
 
     ctx = zctx.new()
     p = zsocket.new(ctx, zmq.PUB)
@@ -23,8 +29,9 @@ def test_zmsg():
     zmsg.send(m, p)
     zsocket.poll(u, 1)
     n = zmsg.recv(u)
-    assert zmsg.size(n) == 3
-    assert zframe.data(zmsg.next(n)) == 'bar'
-    assert zframe.data(zmsg.next(n)) == 'foo'
-    assert zframe.data(zmsg.next(n)) == 'ding'
+    assert zmsg.size(n) == 4
+    assert zframe.data(zmsg.next(n))[:] == 'bar'
+    assert zframe.data(zmsg.next(n))[:] == 'foo'
+    assert zframe.data(zmsg.next(n))[:] == 'ding'
+    assert zframe.data(zmsg.next(n))[:] == 'dong'
     assert zmsg.next(n) is None

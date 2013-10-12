@@ -1,3 +1,4 @@
+import os
 import inspect
 from functools import wraps
 from cffi import FFI
@@ -19,6 +20,8 @@ def cdef(decl, returns_string=False, nullable=False):
         @wraps(f)
         def inner_f(*args):
             val = f(*args)
+            # if Z.zmq_errno():
+            #     raise Exception(os.strerror(Z.zmq_errno()))
             if nullable and val == ffi.NULL:
                 return None
             elif returns_string:

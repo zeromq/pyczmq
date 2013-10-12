@@ -1,5 +1,5 @@
 from __future__ import print_function
-from pyczmq._cffi import C, cdef, ptop
+from pyczmq._cffi import C, cdef, ptop, ffi
 
 __doc__ = """
 The zframe class provides methods to send and receive single message
@@ -76,11 +76,11 @@ def size(frame):
     return C.zframe_size(frame)
 
 
-@cdef('char * zframe_data (zframe_t *self);', returns_string=True)
+@cdef('void * zframe_data (zframe_t *self);')
 def data(frame):
     """Return address of frame data
     """
-    return C.zframe_data(frame)
+    return ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
 
 
 @cdef('zframe_t * zframe_dup (zframe_t *self);')
