@@ -12,11 +12,11 @@ def test_zmsg():
     assert zmsg.first(m) == bar
     assert zmsg.last(m) == foo
     zmsg.append(m, zframe.new('ding'))
+
+    # dup and mutate the buffer view
     d = zframe.dup(zmsg.last(m))
     assert zframe.data(d)[:] == 'ding'
-
-    # mutate the buffer view
-    zframe.data(d)[:] = 'dong'  
+    zframe.data(d)[1] = 'o'  
     assert zframe.data(d)[:] == 'dong'
     assert zframe.size(d) == 4
     zmsg.append(m, d)
