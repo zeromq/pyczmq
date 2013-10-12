@@ -6,7 +6,7 @@
 Welcome to pyczmq's documentation!
 ==================================
 
-`pyczmq <https://github.com/zeromq/czmq>`_ is a 
+`pyczmq <https://github.com/michelp/pyczmq>`_ is a 
 `CFFI <http://cffi.readthedocs.org/en/release-0.7/>`_ wrapper around 
 `CZMQ <http://czmq.zeromq.org/>`_.
 
