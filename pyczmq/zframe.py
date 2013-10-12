@@ -118,7 +118,7 @@ def more(frame):
     Return frame MORE indicator (1 or 0), set when reading frame from
     socket or by the zframe_set_more() method
     """
-    return  C.zframe_more(frame)
+    return C.zframe_more(frame)
 
 
 @cdef('void zframe_set_more (zframe_t *self, int more);')
@@ -136,12 +136,12 @@ def eq(frame, other):
     Return TRUE if two frames have identical size and data
     If either frame is NULL, equality is always false.
     """
-    return  C.zframe_eq(frame, other)
+    return C.zframe_eq(frame, other)
 
 
 @cdef('void zframe_reset (zframe_t *self, const void *data, size_t size);')
 def reset(frame, string):
     """Set new contents for frame
     """
-    return  C.zframe_reset(frame, string, len(string))
+    return C.zframe_reset(frame, string, len(string))
 

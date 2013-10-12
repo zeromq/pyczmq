@@ -16,6 +16,19 @@ Some functions will probably not be wrapped, notably those that
 provide duplicate functionality to built-in python type or libraries
 like zlist, zhash, zsys, zclock, zdir, etc.
 
+Installation
+
+You need zmq and czmq to be installed on your system.  This code has only
+been tested with zmq 4.0.1 and czmq 2.0.2.  You can download both
+and install them with the usual configure/make/make install dance.
+
+You will also need libffi.  On Ubuntu this can be installed with 'sudo
+apt-get install libffi-dev'.  Other OSes may have a different package
+name.
+
+After that, pyczmq can be installed from the Cheese Shop with 'pip
+install pyczmq.'
+
 CZMQ functions are exposed via the cffi library's ABI access mode.  No
 compiler is required to use it.  The czmq library is accessed with
 dlopen and a set of parsed function declarations.
@@ -70,27 +83,6 @@ over by various functions in zmsg and are destroyed when the msg is
 sent and destroyed.  If you create these objects and don't in turn
 call the functions that destroy them, you must explicitly destroy them
 yourself with zmsg.destroy or zframe.destroy.
-
-Functionality is also encapsulated in a number of optional helper
-classes to make a more "object oriented" API, if you're into that kind
-of thing.  Types included are 'Context', 'Socket', 'Frame', 'Msg',
-(and TODO:) 'Loop' and 'Beacon'.  These classes also try to quack more
-pythonically than the underlying function api and some of the
-ownership issues are (hopefully) hidden.  For example::
-
-    ctx = Context()
-    pub = ctx.socket('PUB')
-    sub = ctx.socket('SUB')
-    sub.set_subscribe('')
-    pub.bind('inproc://zoop')
-    sub.connect('inproc://zoop')
-    pub.send('foo')
-    sub.poll(1)
-    assert sub.recv() == 'foo'
-
-The object wrappers come at the expense of extra objects and function
-calls to construct the facade.  This is probably not an issue for most
-applications.
 
 Like what you see?  If you feel like leaving me or other open source
 developers a tip for our work, please visit gittip:

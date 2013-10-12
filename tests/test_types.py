@@ -1,7 +1,7 @@
-from pyczmq import Ctx
+from pyczmq import Context
 
 def test_types():
-    ctx = Ctx()
+    ctx = Context()
     pub = ctx.socket('PUB')
     sub = ctx.socket('SUB')
     sub.set_subscribe('')
