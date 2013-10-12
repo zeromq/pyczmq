@@ -18,6 +18,7 @@ def test_zmsg():
     # mutate the buffer view
     zframe.data(d)[:] = 'dong'  
     assert zframe.data(d)[:] == 'dong'
+    assert zframe.size(d) == 4
     zmsg.append(m, d)
 
     ctx = zctx.new()
