@@ -25,28 +25,29 @@ def recv_nowait(sock):
 
 
 @cdef('int zstr_send (void *socket, const char *format, ...);')
-def send(sock, fmt):
+def send(sock, string):
     """
     Send a formatted string to a socket
     """
-    C.zstr_send(sock, fmt)
+    return C.zstr_send(sock, string)
 
 
 @cdef('int zstr_sendm (void *socket, const char *format, ...);')
-def sendm(sock, fmt):
+def sendm(sock, string):
     """
     Send a formatted string to a socket, with MORE flag
     """
-    return C.zstr_sendm(sock, fmt)
+    return C.zstr_sendm(sock, string)
 
 
 @cdef('int zstr_sendx (void *socket, const char *string, ...);')
-def sendx(sock, string):
+def sendx(sock, *strings):
     """
     Send a series of strings (until NULL) as multipart data
     Returns 0 if the strings could be sent OK, or -1 on error.
     """
-    return C.zstr_sendx(sock, string)
+    varargs = [ffi.new('char[]', s) for s in strings] + [ffi.NULL]
+    return C.zstr_sendx(sock, *varargs)
 
 
 @cdef('int zstr_recvx (void *socket, char **string_p, ...);')
