@@ -14,7 +14,7 @@ def destroy(cert):
 def new():
     """Create and initialize a new certificate in memory
     """
-    return ffi.gc(zcert_new(), destroy)
+    return ffi.gc(C.zcert_new(), destroy)
 
 
 @cdef('zcert_t * zcert_new_from (char *public_key, char *secret_key);')
