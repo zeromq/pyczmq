@@ -1,10 +1,10 @@
-Python CFFI wrapper around the czmq zeromq bindings.
+# Python CFFI wrapper around the czmq zeromq bindings.
 
-http://czmq.zeromq.org/
+    http://czmq.zeromq.org/
 
 The documentation for this binding can be found at readthedocs:
 
-http://pyczmq.readthedocs.org/
+    http://pyczmq.readthedocs.org/
 
 This is still a work in progress, not all of the API is fully
 wrapped yet.
@@ -16,7 +16,7 @@ Some functions will probably not be wrapped, notably those that
 provide duplicate functionality to built-in python type or libraries
 like zlist, zhash, zsys, zclock, zdir, etc.
 
-Installation
+## Installation
 
 You need zmq and czmq to be installed on your system.  This code has only
 been tested with zmq 4.0.1 and czmq 2.0.2.  You can download both
@@ -24,7 +24,7 @@ and install them with the usual configure/make/make install dance.
 
 You will also need libffi.  On Ubuntu this can be installed with 'sudo
 apt-get install libffi-dev'.  Other OSes may have a different package
-name.
+name. On Ubuntu you'll also need python-dev and python-virtualenv.
 
 After that, pyczmq can be installed from the Cheese Shop with 'pip
 install pyczmq.'
@@ -88,3 +88,4 @@ Like what you see?  If you feel like leaving me or other open source
 developers a tip for our work, please visit gittip:
 
 https://www.gittip.com/michelp/
+
