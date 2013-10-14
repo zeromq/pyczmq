@@ -8,7 +8,4 @@ def test_ctx():
     zctx.set_pipehwm(ctx, 500)
     zctx.set_rcvhwm(ctx, 500)
     underlying = zctx.underlying(ctx)
-    del ctx
-
-    
-
+    zctx.destroy(ctx)

@@ -24,7 +24,9 @@ DONTWAIT = 4
 def destroy(frame):
     """Destroy a frame
     """
-    return C.zframe_destroy(ptop('zframe_t', frame))
+    if frame is not ffi.NULL:
+        C.zframe_destroy(ptop('zframe_t', frame))
+    return ffi.NULL
 
 
 @cdef('zframe_t * zframe_new (const void *data, size_t size);')

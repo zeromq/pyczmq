@@ -1,39 +1,47 @@
 from pyczmq import zmq, zctx, zpoller, zsocket, zstr
 
 
-def test_zpoller():
+def test_zpoller(verbose=False):
 
     ctx = zctx.new()
 
     # Create a few sockets
     vent = zsocket.new(ctx, zmq.PUSH);
     rc = zsocket.bind(vent, "tcp://*:9000")
-    assert rc != -1
+    assert rc != -1, "vent bind error"
     sink = zsocket.new(ctx, zmq.PULL)
-    rc = zsocket.connect(sink, "tcp://127.0.0.1:9000");
-    assert rc != -1
+    rc = zsocket.connect(sink, "tcp://localhost:9000");
+    assert rc != -1, "sink connect error"
     bowl = zsocket.new(ctx, zmq.PULL)
     dish = zsocket.new(ctx, zmq.PULL)
 
     # Set-up poller
     poller = zpoller.new(bowl, sink, dish)
-    assert poller
+    assert poller, "poller create error"
 
     zstr.send(vent, "Hello, World")
 
     # We expect a message only on the sink
     which = zpoller.wait(poller, 1000)
 
-    assert which == sink
-    assert not zpoller.expired(poller)
-    assert not zpoller.terminated(poller)
+    assert which == sink, "expected message on sink only"
+    assert not zpoller.expired(poller), "unexpected poll timer exipiry"
+    assert not zpoller.terminated(poller), "unexpected poller termination (interrupted)"
 
     message = zstr.recv(which)
-    assert message == "Hello, World"
+    assert message == "Hello, World", "unexpected message recevied"
 
-    # There is currently something wrong with manually calling
-    # delete. Probably something to do with hooking the delete
-    # to ffi.gc ??
-    #
     # Destroy poller and context
-    #zpoller.destroy(poller)
+    poller = zpoller.destroy(poller)
+
+    #rc = zsocket.disconnect(sink, "tcp://localhost:9000")
+    #assert rc == 0, "sink disconnect error"
+    #rc = zsocket.unbind(vent, "tcp://*:9000")
+    #assert rc == 0, "vent disconnect error"
+
+    #bowl = zsocket.destroy(ctx, bowl)
+    #dish = zsocket.destroy(ctx, dish)
+    #sink = zsocket.destroy(ctx, sink)
+    #vent = zsocket.destroy(ctx, vent)
+
+    ctx = zctx.destroy(ctx)

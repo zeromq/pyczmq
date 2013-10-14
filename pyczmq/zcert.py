@@ -7,21 +7,24 @@ cdef('typedef struct _zcert_t zcert_t;')
 def destroy(cert):
     """Destroy a certificate in memory
     """
-    C.zcert_destroy(ptop('zcert_t', cert))
+    if cert is not ffi.NULL:
+        C.zcert_destroy(ptop('zcert_t', cert))
+    return ffi.NULL
 
 
 @cdef('zcert_t * zcert_new (void);')
 def new():
     """Create and initialize a new certificate in memory
     """
-    return ffi.gc(C.zcert_new(), destroy)
+    return C.zcert_new()
 
 
 @cdef('zcert_t * zcert_new_from (char *public_key, char *secret_key);')
 def new_from(public_key, secret_key):
     """Constructor, accepts public/secret key pair from caller
     """
-    return ffi.gc(C.zcert_new_from(public_key, secret_key), destroy)
+    #return ffi.gc(C.zcert_new_from(public_key, secret_key), destroy)
+    return C.zcert_new_from(public_key, secret_key)
 
 
 @cdef('char * zcert_public_key (zcert_t *self);')

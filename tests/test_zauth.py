@@ -4,7 +4,6 @@ Replicates czmq test_zauth
 
 import os
 import shutil
-import time
 from pyczmq import zmq, zauth, zcert, zctx, zpoller, zsocket, zstr
 
 
@@ -16,21 +15,18 @@ def s_can_connect(server, client):
     global PORT_NBR
     rc = zsocket.bind(server, "tcp://*:{}".format(PORT_NBR))
     assert rc == PORT_NBR
-    rc = zsocket.connect(client, "tcp://localhost:{}".format(PORT_NBR))
+    rc = zsocket.connect(client, "tcp://127.0.0.1:{}".format(PORT_NBR))
     assert rc == 0
 
     zstr.send(server, "Hello World")
 
-    # zpoller is segfaulting
-    #poller = zpoller.new(client)
-    #success = zpoller.wait(poller, 500) == client
-    # use the zsocket.poll until resolved.
-    success = zsocket.poll(client, 500)
-    #zpoller.destroy(poller)
+    poller = zpoller.new(client)
+    success = zpoller.wait(poller, 100) == client
+    poller = zpoller.destroy(poller)
 
     rc = zsocket.unbind(server, "tcp://*:{}".format(PORT_NBR))
     assert rc != -1
-    rc = zsocket.disconnect(client, "tcp://localhost:{}".format(PORT_NBR))
+    rc = zsocket.disconnect(client, "tcp://127.0.0.1:{}".format(PORT_NBR))
     assert rc != -1
     PORT_NBR += 1
     return success
@@ -38,8 +34,10 @@ def s_can_connect(server, client):
 
 def test_zauth(verbose=False):
 
-    if not os.path.exists(TESTDIR):
-        os.mkdir(TESTDIR)
+    if os.path.exists(TESTDIR):
+        # delete data from a previous test run
+        shutil.rmtree(TESTDIR)
+    os.mkdir(TESTDIR)
 
     # Install the authenticator
     ctx = zctx.new()
@@ -51,6 +49,7 @@ def test_zauth(verbose=False):
     # through our authentication infrastructure at all.
     server = zsocket.new(ctx, zmq.PUSH)
     client = zsocket.new(ctx, zmq.PULL)
+    zsocket.set_reconnect_ivl(client, 1000) # slow down reconnect attempts
     success = s_can_connect(server, client)
     assert success
 
@@ -60,17 +59,17 @@ def test_zauth(verbose=False):
     server = zsocket.new(ctx, zmq.PUSH)
     zsocket.set_zap_domain(server, 'global')
     success = s_can_connect(server, client)
-    assert success
+    assert success, "Unexpected connection failure: no authenticator test"
 
     # Blacklist 127.0.0.1, connection should fail
     zauth.deny(auth, "127.0.0.1")
     success = s_can_connect(server, client)
-    assert not success
+    assert not success, "Unexpected connection success: blacklist test"
 
     # Whitelist our address, which overrides the blacklist
     zauth.allow (auth, "127.0.0.1")
     success = s_can_connect(server, client)
-    assert success
+    assert success, "Unexpected connection failure: whitelist test"
 
     # Try PLAIN authentication
     password_file = os.path.join(TESTDIR, "password-file")
@@ -82,15 +81,15 @@ def test_zauth(verbose=False):
     zsocket.set_plain_username(client, "admin")
     zsocket.set_plain_password(client, "Password")
     success = s_can_connect(server, client)
-    assert not success
+    assert not success, "Unexpected connection success: Test no password-file set"
 
     zauth.configure_plain(auth, "*", password_file)
     success = s_can_connect(server, client)
-    assert success
+    assert success, "Unexpected connection failure: Test password-file set and valid client username and password"
 
     zsocket.set_plain_password (client, "Bogus")
     success = s_can_connect(server, client)
-    assert not success
+    assert not success, "Unexpected connection success: Test invalid password"
 
     server_cert = zcert.new()
     zcert.apply(server_cert, server)
@@ -103,37 +102,34 @@ def test_zauth(verbose=False):
 
     # We've not set-up any authentication, connection will fail
     success = s_can_connect(server, client)
-    assert not success
+    assert not success, "Unexpected connection success: Test no curve authentication set"
 
     # Test CURVE_ALLOW_ANY
     zauth.configure_curve(auth, "*", zauth.CURVE_ALLOW_ANY)
     success = s_can_connect(server, client)
-    assert success
+    assert success, "Unexpected connection failure: CURVE_ALLOW_ANY test"
 
     # Test full client authentication using certificates
     certificate_file = os.path.join(TESTDIR, "mycert.txt")
     zcert.save_public(client_cert, certificate_file)
     zauth.configure_curve(auth, "*", TESTDIR)
     success = s_can_connect(server, client)
-    assert success
+    assert success, "Unexpected connection failure: client authentication test"
 
     # There is currently something wrong with manually calling
     # delete. Probably something to do with hooking the delete
     # to ffi.gc ??
     #
-    #zcert.destroy(server_cert)
-    #zcert.destroy(client_cert)
+    server_cert = zcert.destroy(server_cert)
+    client_cert = zcert.destroy(client_cert)
 
     # Remove the authenticator and check a normal connection works
-    #zauth.destroy(auth)
+    auth = zauth.destroy(auth)
 
-    #time.sleep(0.5)
+    success = s_can_connect(server, client)
+    assert success, "Unexpected connection failure: no authenticator test"
 
-    #success = s_can_connect(server, client)
-    #assert success
-    #print("success")
-
-    #zctx.destroy(ctx)
+    ctx = zctx.destroy(ctx)
 
     # Delete all test files
     shutil.rmtree(TESTDIR)

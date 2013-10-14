@@ -15,8 +15,9 @@ cdef('typedef struct _zmsg_t zmsg_t;')
 def destroy(m):
     """Destroy a message object and all frames it contains
     """
-    C.zmsg_destroy(ptop('zmsg_t', m))
-
+    if m is not ffi.NULL:
+        C.zmsg_destroy(ptop('zmsg_t', m))
+    return ffi.NULL
 
 @cdef('zmsg_t * zmsg_new (void);')
 def new():
@@ -149,7 +150,7 @@ def remove(msg, frame):
 @cdef('zframe_t * zmsg_first (zmsg_t *self);', nullable=True)
 def first(msg):
     """
-    Set cursor to first frame in message. Returns frame, or NULL, if the 
+    Set cursor to first frame in message. Returns frame, or NULL, if the
     message is empty. Use this to navigate the frames as a list.
     """
     return C.zmsg_first(msg)
@@ -174,7 +175,7 @@ def last(msg):
 @cdef('int zmsg_save (zmsg_t *self, FILE *file);')
 def save(msg, file):
     """
-    Save message to an open file, return 0 if OK, else -1. The message is 
+    Save message to an open file, return 0 if OK, else -1. The message is
     saved as a series of frames, each with length and data. Note that the
     file is NOT guaranteed to be portable between operating systems, not
     versions of CZMQ. The file format is at present undocumented and liable
@@ -187,7 +188,7 @@ def save(msg, file):
 def load(msg, file):
     """
     Load/append an open file into message, create new message if
-    null message provided. Returns NULL if the message could not 
+    null message provided. Returns NULL if the message could not
     be loaded.
     """
     return C.zmsg_load(msg, file)

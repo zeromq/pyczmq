@@ -11,3 +11,4 @@ def test_zsocket():
     zstr.send(push, 'foo')
     zsocket.poll(pull, 1)
     assert zstr.recv_nowait(pull) == 'foo'
+    ctx = zctx.destroy(ctx)

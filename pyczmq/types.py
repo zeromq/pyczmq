@@ -1,5 +1,5 @@
+import weakref
 from pyczmq import (
-    _cffi,
     zmq,
     zctx,
     zsocket,
@@ -9,6 +9,7 @@ from pyczmq import (
     zbeacon,
     zloop,
     )
+from pyczmq._cffi import ffi
 
 
 class Frame(object):
@@ -30,6 +31,11 @@ class Frame(object):
         else:
             self.frame = zframe.new_empty()
 
+    def __del__(self):
+        if self.frame:
+            zframe.destroy(self.frame)
+            self._frame = None
+
     def __str__(self):
         return zframe.strdup(self.frame)
 
@@ -48,8 +54,7 @@ class Frame(object):
         return zframe.data(self.frame)
 
     def destroy(self):
-        zframe.destroy(self.frame)
-        self.frame = None
+        self.__del__()
 
     def dup(self):
         return zframe.dup(self.frame)
@@ -76,15 +81,22 @@ class Message(object):
 
     __slots__ = ('msg',)
 
-    def __init__(self, msg):
-        self.msg = msg
+    def __init__(self, msg=None):
+        if msg:
+            self.msg = msg
+        else:
+            self.msg = zmsg.new()
 
     def __len__(self):
         return zmsg.size(self.msg)
 
+    def __del__(self):
+        if self.msg:
+            zmsg.destroy(self.msg)
+            self.msg = None
+
     def destroy(self):
-        zmsg.destroy(self.msg)
-        self.msg = None
+        self.__del__()
 
     def content_size(self):
         return zmsg.content_size(self.msg)
@@ -131,10 +143,20 @@ class Socket(object):
     """Wrapper class around zsocket/zsockopt
     """
 
-    __slots__ = ('sock',)
+    __slots__ = ('sock', 'ctx')
 
     def __init__(self, ctx, typ):
+        self.ctx = weakref.ref(ctx)
         self.sock = zsocket.new(ctx, typ)
+
+    def __del__(self):
+        if self.sock:
+            if self.ctx():
+                zsocket.destroy(self.ctx(), self.sock)
+                self.sock = None
+
+    def destroy(self):
+        self.__del__()
 
     def send(self, msg):
         return zstr.send(self.sock, msg)
@@ -194,13 +216,21 @@ class Context(object):
     """
 
     def __init__(self, iothreads=1):
-        self.ctx = zctx.new()
-        zctx.set_iothreads(self.ctx, iothreads)
+        self._ctx = zctx.new()
+        zctx.set_iothreads(self._ctx, iothreads)
+
+    def __del__(self):
+        if self._ctx:
+            zctx.destroy(self._ctx)
+            self._ctx = None
+
+    def destroy(self):
+        self.__del__()
 
     def socket(self, typ):
         if isinstance(typ, basestring):
             typ = zmq.types[typ]
-        return Socket(self.ctx, typ)
+        return Socket(self._ctx, typ)
 
 
 # TODO below
@@ -211,21 +241,36 @@ class Loop(object):
     """
 
     def __init__(self):
-        self.loop = zloop.new()
+        self._loop = weakref.ref(zloop.new())
+
+    def __del__(self):
+        if self.loop:
+            zloop.destroy(self.loop)
+            self._loop = None
+
+    @property
+    def loop(self):
+        return self._loop
 
     def start(self):
         zloop.start(self.loop)
 
     def poller(self, item, handler, arg=None):
-        callback = _cffi.ffi.callback('zloop_fn', handler)
-        arg_handle = _cffi.ffi.new_handle(arg)
+        callback = ffi.callback('zloop_fn', handler)
+        arg_handle = ffi.new_handle(arg)
         zloop.poller(self.loop, item, callback, arg_handle)
 
+    def poller_end(self, item):
+        zloop.poller_end(self.loop, item)
+
     def timer(self, delay, times, handler, arg=None):
-        callback = _cffi.ffi.callback('zloop_fn', handler)
-        arg_handle = _cffi.ffi.new_handle(arg)
+        callback = ffi.callback('zloop_fn', handler)
+        arg_handle = ffi.new_handle(arg)
         zloop.timer(self.loop, delay, times, callback, arg_handle)
 
+    def timer_end(self, arg):
+        arg_handle = ffi.new_handle(arg)
+        zloop.timer_end(self.loop, arg_handle)
 
 
 class Beacon(object):

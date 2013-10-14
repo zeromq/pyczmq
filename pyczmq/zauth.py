@@ -1,16 +1,18 @@
 from pyczmq._cffi import C, ffi, cdef, ptop
 
 
-cdef('typedef struct _zauth_t zauth_t;')
-
-
 CURVE_ALLOW_ANY = "*"
+
+
+cdef('typedef struct _zauth_t zauth_t;')
 
 
 @cdef('void zauth_destroy (zauth_t **self_p);')
 def destroy(auth):
     """ Destructor """
-    return C.zauth_destroy(ptop('zauth_t', auth))
+    if auth is not ffi.NULL:
+        C.zauth_destroy(ptop('zauth_t', auth))
+    return ffi.NULL
 
 
 @cdef('zauth_t * zauth_new (zctx_t *ctx);')
@@ -23,8 +25,7 @@ def new(ctx):
     connections are denied. If there was an error during
     initialization, returns NULL.
     """
-    return ffi.gc(C.zauth_new(ctx), destroy)
-
+    return C.zauth_new(ctx)
 
 
 @cdef('void zauth_allow (zauth_t *self, char *address);')

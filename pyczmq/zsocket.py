@@ -15,7 +15,9 @@ def destroy(ctx, socket):
     unless you need to destroy sockets created by some other means
     (like a call directly to 'pyczmq.C.zsocket_new')
     """
-    return C.zsocket_destroy(ctx, socket)
+    if socket is not ffi.NULL:
+        C.zsocket_destroy(ctx, socket)
+    return ffi.NULL
 
 
 @cdef('void * zsocket_new (zctx_t *self, int type);')
@@ -26,7 +28,7 @@ def new(ctx, typ):
     Note: SUB sockets do not automatically subscribe to everything;
     you must set filters explicitly.
     """
-    return ffi.gc(C.zsocket_new(ctx, typ), lambda s: destroy(ctx, s))
+    return C.zsocket_new(ctx, typ)
 
 
 @cdef('int zsocket_bind (void *socket, const char *format, ...);')
@@ -100,16 +102,16 @@ cdef('''
     http://czmq.zeromq.org.
 
     This is free software; you can redistribute it and/or modify it under
-    the terms of the GNU Lesser General Public License as published by the 
-    Free Software Foundation; either version 3 of the License, or (at your 
+    the terms of the GNU Lesser General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or (at your
     option) any later version.
 
     This software is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABIL-
-    ITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General 
+    ITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General
     Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License 
+    You should have received a copy of the GNU Lesser General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
     =========================================================================
 */

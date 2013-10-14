@@ -18,29 +18,29 @@ def test_zframe():
     for i in range(0, 5):
         frame = zframe.new("Hello")
         rc = zframe.send(frame, output_s, zframe.MORE)
-        assert(rc == 0)
+        assert rc == 0
 
     # Send same frame five times, test ZFRAME_REUSE
     frame = zframe.new("Hello")
     for i in range(0, 5):
         rc = zframe.send(frame, output_s, zframe.MORE + zframe.REUSE)
-        assert(rc == 0)
-    assert(frame)
+        assert rc == 0
+    assert frame
 
     copy = zframe.dup(frame)
     assert (zframe.eq(frame, copy))
 
     zframe.reset(frame, "")
     assert (not zframe.eq(frame, copy))
-    assert (zframe.size(copy) == 5)
-    zframe.destroy(frame)
-    zframe.destroy(copy)
+    assert zframe.size(copy) == 5
+    frame = zframe.destroy(frame)
+    copy = zframe.destroy(copy)
 
     # Test zframe_new_empty
     frame = zframe.new_empty()
-    assert(frame)
-    assert(zframe.size(frame) == 0)
-    zframe.destroy(frame)
+    assert frame
+    assert zframe.size(frame) == 0
+    frame = zframe.destroy(frame)
 
     # Send END frame
     frame = zframe.new("NOT")
@@ -50,7 +50,6 @@ def test_zframe():
 
     frame_bytes = zframe.data(frame)[:]
     assert frame_bytes == "END"
-
 
     string = zframe.strdup(frame)
     assert(string == "END")
@@ -63,7 +62,7 @@ def test_zframe():
         frame = zframe.recv(input_s)
         frame_nbr += 1
         if zframe.streq(frame, "END"):
-            zframe.destroy(frame)
+            frame = zframe.destroy(frame)
             break
         else:
             assert(zframe.size(frame) == 5)
@@ -71,7 +70,9 @@ def test_zframe():
         assert(zframe.more(frame))
         zframe.set_more(frame, 0)
         assert(zframe.more(frame) == 0)
-        zframe.destroy(frame)
+        frame = zframe.destroy(frame)
     assert(frame_nbr == 11)
     frame = zframe.recv_nowait(input_s)
-    assert(frame is None)
+    assert frame is None
+
+    zctx.destroy(ctx)

@@ -23,3 +23,5 @@ def test_zloop():
     zloop.poller(
         l, zmq.pollitem(socket=input, events=zmq.POLLIN), item_handler, 3)
     zloop.start(l)
+
+    l = zloop.destroy(l)

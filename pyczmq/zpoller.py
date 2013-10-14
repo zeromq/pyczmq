@@ -13,14 +13,16 @@ cdef('typedef struct _zpoller_t zpoller_t;')
 @cdef('void zpoller_destroy (zpoller_t **self_p);')
 def destroy(poller):
     """Destroy a poller"""
-    C.zpoller_destroy(ptop('zpoller_t', poller))
+    if poller is not ffi.NULL:
+        C.zpoller_destroy(ptop('zpoller_t', poller))
+    return ffi.NULL
 
 
 @cdef('zpoller_t * zpoller_new (void *reader, ...);')
 def new(reader, *readers):
     """Create new poller"""
     readers = list(readers) + [ffi.NULL]
-    return ffi.gc(C.zpoller_new(reader, *readers), destroy)
+    return C.zpoller_new(reader, *readers)
 
 
 @cdef(' void * zpoller_wait (zpoller_t *self, int timeout);', nullable=True)
