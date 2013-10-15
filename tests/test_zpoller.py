@@ -1,3 +1,7 @@
+"""
+Replicates czmq test_zpoller
+"""
+
 from pyczmq import zmq, zctx, zpoller, zsocket, zstr
 
 
@@ -33,15 +37,4 @@ def test_zpoller(verbose=False):
 
     # Destroy poller and context
     poller = zpoller.destroy(poller)
-
-    #rc = zsocket.disconnect(sink, "tcp://localhost:9000")
-    #assert rc == 0, "sink disconnect error"
-    #rc = zsocket.unbind(vent, "tcp://*:9000")
-    #assert rc == 0, "vent disconnect error"
-
-    #bowl = zsocket.destroy(ctx, bowl)
-    #dish = zsocket.destroy(ctx, dish)
-    #sink = zsocket.destroy(ctx, sink)
-    #vent = zsocket.destroy(ctx, vent)
-
     ctx = zctx.destroy(ctx)

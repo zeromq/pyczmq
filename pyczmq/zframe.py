@@ -128,7 +128,7 @@ def set_more(frame, more):
     Set frame MORE indicator (1 or 0). Note this is NOT used when sending
     frame to socket, you have to specify flag explicitly.
     """
-    return C.zframe_set_more(frame, more)
+    C.zframe_set_more(frame, more)
 
 
 @cdef('bool zframe_eq (zframe_t *self, zframe_t *other);')
@@ -144,5 +144,5 @@ def eq(frame, other):
 def reset(frame, string):
     """Set new contents for frame
     """
-    return C.zframe_reset(frame, string, len(string))
+    C.zframe_reset(frame, string, len(string))
 

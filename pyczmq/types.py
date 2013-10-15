@@ -1,4 +1,3 @@
-import weakref
 from pyczmq import (
     zmq,
     zctx,
@@ -31,11 +30,6 @@ class Frame(object):
         else:
             self.frame = zframe.new_empty()
 
-    def __del__(self):
-        if self.frame:
-            zframe.destroy(self.frame)
-            self._frame = None
-
     def __str__(self):
         return zframe.strdup(self.frame)
 
@@ -49,21 +43,20 @@ class Frame(object):
             return zframe.eq(self.frame, other.frame)
         return zframe.eq(self.frame, other)
 
-    @property
     def bytes(self):
-        return zframe.data(self.frame)
+        return zframe.data(self.frame)[:]
 
     def destroy(self):
-        self.__del__()
+        self.frame = zframe.destroy(self.frame)
 
     def dup(self):
-        return zframe.dup(self.frame)
+        return Frame(frame=zframe.dup(self.frame))
 
     def strhex(self):
         return zframe.strhex(self.frame)
 
     def reset(self, data):
-        return zframe.reset(data, len(data))
+        zframe.reset(self.frame, data)
 
     def more(self):
         return zframe.more(self.frame)
@@ -90,13 +83,8 @@ class Message(object):
     def __len__(self):
         return zmsg.size(self.msg)
 
-    def __del__(self):
-        if self.msg:
-            zmsg.destroy(self.msg)
-            self.msg = None
-
     def destroy(self):
-        self.__del__()
+        self.msg = zmsg.destroy(self.msg)
 
     def content_size(self):
         return zmsg.content_size(self.msg)
@@ -121,6 +109,9 @@ class Message(object):
     def popstr(self):
         return zmsg.popstr(self.msg)
 
+    def dup(self):
+        return Message(msg=zmsg.dup(self.msg))
+
     def first(self):
         return Frame(frame=zmsg.first(self.msg))
 
@@ -129,6 +120,22 @@ class Message(object):
 
     def last(self):
         return Frame(frame=zmsg.last(self.msg))
+
+    def save(self, filename):
+        fd = open(filename, 'w')
+        rc = zmsg.save(self.msg, ffi.cast("FILE *", filename))
+        if rc != 0:
+            print("Error saving msg to file")
+        fd.close()
+
+    def load(self, filename):
+        fd = open(filename, 'r')
+        if self.msg:
+            self.destroy()
+        msg = zmsg.load(ffi.NULL, ffi.cast("FILE *", filename))
+        if msg is not ffi.NULL:
+            self.msg = msg
+        fd.close()
 
     def __iter__(self):
         n = self.next()
@@ -146,45 +153,25 @@ class Socket(object):
     __slots__ = ('sock', 'ctx')
 
     def __init__(self, ctx, typ):
-        self.ctx = weakref.ref(ctx)
+        self.ctx = ctx
         self.sock = zsocket.new(ctx, typ)
 
-    def __del__(self):
-        if self.sock:
-            if self.ctx():
-                zsocket.destroy(self.ctx(), self.sock)
-                self.sock = None
+    def __getattr__(self, name):
+        if name in dir(zsocket):
+            return lambda *args: getattr(zsocket, name)(self.sock, *args)
+        raise AttributeError(name)
+
+    def __repr__(self):
+        return '<Socket {}>'.format(zsocket.type_str(self.sock))
+
+    def __str__(self):
+        return '{} socket'.format(zsocket.type_str(self.sock))
+
+    def type(self):
+        return zsocket.type_str(self.sock)
 
     def destroy(self):
-        self.__del__()
-
-    def send(self, msg):
-        return zstr.send(self.sock, msg)
-
-    def recv(self):
-        return zstr.recv(self.sock)
-
-    def recv_nowait(self):
-        return zstr.recv_nowait(self.sock)
-
-    def send_frame(self, frame):
-        if isinstance(frame, Frame):
-            frame = frame.frame
-        return zframe.send(self.sock, frame)
-
-    def recv_frame(self):
-        return Frame(frame=zframe.recv(self.sock))
-
-    def recv_frame_nowait(self):
-        return Frame(frame=zframe.recv_nowait(self.sock))
-
-    def send_msg(self, msg):
-        if isinstance(msg, Message):
-            msg = msg.msg
-        return zmsg.send(self.sock, msg)
-
-    def recv_msg(self):
-        return Message(zmsg.recv(self.sock))
+        self.sock = zsocket.destroy(self.ctx, self.sock)
 
     def connect(self, endpoint):
         return zsocket.connect(self.sock, endpoint)
@@ -201,13 +188,39 @@ class Socket(object):
     def poll(self, timeout=0):
         return zsocket.poll(self.sock, timeout)
 
-    def __getattr__(self, name):
-        if name in dir(zsocket):
-            return lambda *args: getattr(zsocket, name)(self.sock, *args)
-        raise AttributeError(name)
+    def send(self, msg):
+        return zstr.send(self.sock, msg)
 
-    def __repr__(self):
-        return '<Socket %s>' % zsocket.type_str(self.sock)
+    def send_frame(self, frame, flags=0):
+        if isinstance(frame, Frame):
+            frame = frame.frame
+        return zframe.send(frame, self.sock, flags)
+
+    def send_msg(self, msg):
+        if isinstance(msg, Message):
+            msg = msg.msg
+        return zmsg.send(msg, self.sock)
+
+    def recv(self):
+        return zstr.recv(self.sock)
+
+    def recv_nowait(self):
+        return zstr.recv_nowait(self.sock)
+
+    def recv_frame(self):
+        f = zframe.recv(self.sock)
+        if f:
+            f = Frame(frame=f)
+        return f
+
+    def recv_frame_nowait(self):
+        f = zframe.recv_nowait(self.sock)
+        if f:
+            f = Frame(frame=f)
+        return f
+
+    def recv_msg(self):
+        return Message(zmsg.recv(self.sock))
 
 
 class Context(object):
@@ -216,24 +229,32 @@ class Context(object):
     """
 
     def __init__(self, iothreads=1):
-        self._ctx = zctx.new()
-        zctx.set_iothreads(self._ctx, iothreads)
-
-    def __del__(self):
-        if self._ctx:
-            zctx.destroy(self._ctx)
-            self._ctx = None
+        self.ctx = zctx.new()
+        zctx.set_iothreads(self.ctx, iothreads)
 
     def destroy(self):
-        self.__del__()
+        self.ctx = zctx.destroy(self.ctx)
+
+    def set_iothreads(self, thread_count):
+        zctx.set_iothreads(self.ctx, thread_count)
+
+    def set_linger(self, msecs):
+        zctx.set_linger(self.ctx, msecs)
+
+    def set_pipehwm(self, hwm):
+        zctx.set_pipehwm(self.ctx, hwm)
+
+    def set_sndhwm(self, hwm):
+        zctx.set_sndhwm(self.ctx, hwm)
+
+    def set_rcvhwm(self, hwm):
+        zctx.set_rcvhwm(self.ctx, hwm)
 
     def socket(self, typ):
         if isinstance(typ, basestring):
             typ = zmq.types[typ]
-        return Socket(self._ctx, typ)
+        return Socket(self.ctx, typ)
 
-
-# TODO below
 
 class Loop(object):
     """
@@ -241,32 +262,32 @@ class Loop(object):
     """
 
     def __init__(self):
-        self._loop = weakref.ref(zloop.new())
+        self.loop = zloop.new()
 
     def __del__(self):
-        if self.loop:
-            zloop.destroy(self.loop)
-            self._loop = None
+        self.loop = zloop.destroy(self.loop)
 
-    @property
-    def loop(self):
-        return self._loop
+    def set_tolerant(self, item):
+        zloop.set_tolerant(self.loop, item)
+
+    def set_verbose(self, verbose):
+        zloop.set_verbose(self.loop, verbose)
 
     def start(self):
         zloop.start(self.loop)
 
-    def poller(self, item, handler, arg=None):
+    def poller(self, poll_item, handler, arg=None):
         callback = ffi.callback('zloop_fn', handler)
         arg_handle = ffi.new_handle(arg)
-        zloop.poller(self.loop, item, callback, arg_handle)
+        return zloop.poller(self.loop, poll_item, callback, arg_handle)
 
-    def poller_end(self, item):
-        zloop.poller_end(self.loop, item)
+    def poller_end(self, poll_item):
+        return zloop.poller_end(self.loop, poll_item)
 
     def timer(self, delay, times, handler, arg=None):
         callback = ffi.callback('zloop_fn', handler)
         arg_handle = ffi.new_handle(arg)
-        zloop.timer(self.loop, delay, times, callback, arg_handle)
+        return zloop.timer(self.loop, delay, times, callback, arg_handle)
 
     def timer_end(self, arg):
         arg_handle = ffi.new_handle(arg)
@@ -276,4 +297,4 @@ class Loop(object):
 class Beacon(object):
 
     def __init__(self):
-        self.loop = zbeacon.new()
+        self.beacon = zbeacon.new()

@@ -46,7 +46,7 @@ def send(m, socket):
     frames, sends nothing but destroys the message anyhow. Safe to call
     if zmsg is null.
     """
-    C.zmsg_send(ptop('zmsg_t', m), socket)
+    return C.zmsg_send(ptop('zmsg_t', m), socket)
 
 
 @cdef('size_t zmsg_size (zmsg_t *self);')
@@ -92,7 +92,7 @@ def append(m, f):
     Returns 0 on success. Deprecates zmsg_add, which did not nullify the
     caller's frame reference.
     """
-    C.zmsg_append(m, ptop('zframe_t', f))
+    return C.zmsg_append(m, ptop('zframe_t', f))
 
 
 @cdef('int zmsg_pushstr (zmsg_t *self, const char *format, ...);')
@@ -173,7 +173,7 @@ def last(msg):
 
 
 @cdef('int zmsg_save (zmsg_t *self, FILE *file);')
-def save(msg, file):
+def save(msg, filename):
     """
     Save message to an open file, return 0 if OK, else -1. The message is
     saved as a series of frames, each with length and data. Note that the
@@ -181,17 +181,17 @@ def save(msg, file):
     versions of CZMQ. The file format is at present undocumented and liable
     to arbitrary change.
     """
-    return C.zmsg_save(msg, file)
+    return C.zmsg_save(msg, filename)
 
 
 @cdef('zmsg_t * zmsg_load (zmsg_t *self, FILE *file);', nullable=True)
-def load(msg, file):
+def load(msg, filename):
     """
     Load/append an open file into message, create new message if
     null message provided. Returns NULL if the message could not
     be loaded.
     """
-    return C.zmsg_load(msg, file)
+    return C.zmsg_load(msg, filename)
 
 
 @cdef('zmsg_t * zmsg_dup (zmsg_t *self);', nullable=True)

@@ -8,7 +8,7 @@ simple message sending.
 """
 
 
-@cdef('char * zstr_recv (void *socket);', returns_string=True)
+@cdef('char * zstr_recv (void *socket);', nullable=True, returns_string=True)
 def recv(sock):
     """
     Receive a string off a socket, caller must free it
@@ -16,7 +16,7 @@ def recv(sock):
     return C.zstr_recv(sock)
 
 
-@cdef('char * zstr_recv_nowait (void *socket);', returns_string=True)
+@cdef('char * zstr_recv_nowait (void *socket);', nullable=True, returns_string=True)
 def recv_nowait(sock):
     """
     Receive a string off a socket if socket had input waiting

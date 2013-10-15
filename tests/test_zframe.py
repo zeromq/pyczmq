@@ -1,4 +1,3 @@
-
 """
 Replicates czmq test_zframe
 """
@@ -75,4 +74,4 @@ def test_zframe():
     frame = zframe.recv_nowait(input_s)
     assert frame is None
 
-    zctx.destroy(ctx)
+    ctx = zctx.destroy(ctx)

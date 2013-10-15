@@ -6,6 +6,12 @@ doesn't wrap the 0MQ socket type, to avoid breaking all libzmq
 socket-related calls.
 """
 
+# This port range is defined by IANA for dynamic or private ports
+# We use this when choosing a port for dynamic binding.
+DYNFROM = 49152
+DYNTO = 65535
+
+
 @cdef('void zsocket_destroy (zctx_t *self, void *socket);')
 def destroy(ctx, socket):
     """Destroy a socket within our CZMQ context.
@@ -82,7 +88,7 @@ def poll(sock, msecs):
 @cdef('char * zsocket_type_str (void *socket);')
 def type_str(sock):
     """Returns socket type as printable constant string"""
-    return C.zsocket_type_str(sock)
+    return ffi.string(C.zsocket_type_str(sock))
 
 cdef('''
 

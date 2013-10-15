@@ -82,7 +82,6 @@ def set_pipehwm(ctx, pipehwm):
     return C.zctx_set_pipehwm(ctx, pipehwm)
 
 
-
 @cdef('void zctx_set_sndhwm (zctx_t *self, int sndhwm);')
 def set_sndhwm(ctx, sndhwm):
     """
