@@ -1,8 +1,9 @@
 pyczmq authors:
 
-  - Michel Pelletier
+  - Michel Pelletier (https://www.gittip.com/michelp/)
 
-  - Chris Laws
+  - Chris Laws (https://github.com/claws)
 
-  - Pieter Hintjens
+  - Pieter Hintjens (https://github.com/hintjens)
+
 
