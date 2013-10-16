@@ -1,4 +1,7 @@
-from pyczmq._cffi import C, ffi, cdef
+from pyczmq._cffi import C, ffi, cdef, ptop
+
+
+CURVE_ALLOW_ANY = "*"
 
 
 cdef('typedef struct _zauth_t zauth_t;')
@@ -7,10 +10,10 @@ cdef('typedef struct _zauth_t zauth_t;')
 @cdef('void zauth_destroy (zauth_t **self_p);')
 def destroy(auth):
     """ Destructor """
-    return C.zauth_destroy(ptop('zauth_t', auth))
+    C.zauth_destroy(ptop('zauth_t', auth))
 
 
-@cdef(' zauth_t * zauth_new (zctx_t *ctx);')
+@cdef('zauth_t * zauth_new (zctx_t *ctx);')
 def new(ctx):
     """
     Install authentication for the specified context. Returns a new
@@ -20,8 +23,7 @@ def new(ctx):
     connections are denied. If there was an error during
     initialization, returns NULL.
     """
-    return ffi.gc(zauth_new(ctx), destroy)
-
+    return ffi.gc(C.zauth_new(ctx), destroy)
 
 
 @cdef('void zauth_allow (zauth_t *self, char *address);')
@@ -82,7 +84,7 @@ def set_verbose(auth, verbose):
     """Enable verbose tracing of commands and activity"""
     return C.zauth_set_verbose(auth, verbose)
 
-    
+
 @cdef(' int zauth_test (bool verbose);')
 def test(verbose):
     """Selftest"""

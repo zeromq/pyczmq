@@ -1,5 +1,5 @@
-import pyczmq
-from pyczmq import zmq, zctx, zsocket, zmsg, zframe, ffi
+
+from pyczmq import zmq, zctx, zsocket, zmsg, zframe
 
 
 def test_zmsg():
@@ -16,7 +16,7 @@ def test_zmsg():
     # dup and mutate the buffer view
     d = zframe.dup(zmsg.last(m))
     assert zframe.data(d)[:] == 'ding'
-    zframe.data(d)[1] = 'o'  
+    zframe.data(d)[1] = 'o'
     assert zframe.data(d)[:] == 'dong'
     assert zframe.size(d) == 4
     zmsg.append(m, d)
@@ -36,3 +36,6 @@ def test_zmsg():
     assert zframe.data(zmsg.next(n))[:] == 'ding'
     assert zframe.data(zmsg.next(n))[:] == 'dong'
     assert zmsg.next(n) is None
+
+    zmsg.destroy(n)
+

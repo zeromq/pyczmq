@@ -19,6 +19,7 @@ def destroy(poller):
 @cdef('zpoller_t * zpoller_new (void *reader, ...);')
 def new(reader, *readers):
     """Create new poller"""
+    readers = list(readers) + [ffi.NULL]
     return ffi.gc(C.zpoller_new(reader, *readers), destroy)
 
 

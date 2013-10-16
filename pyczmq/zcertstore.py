@@ -15,11 +15,11 @@ def destroy(store):
 @cdef('zcertstore_t * zcertstore_new (char *location, ...);')
 def new(location):
     """
-    Create a new certificate store from a disk directory, loading and 
+    Create a new certificate store from a disk directory, loading and
     indexing all certificates in that location. The directory itself may be
-    absent, and created later, or modified at any time. The certificate store 
-    is automatically refreshed on any zcertstore_lookup() call. If the 
-    location is specified as NULL, creates a pure-memory store, which you 
+    absent, and created later, or modified at any time. The certificate store
+    is automatically refreshed on any zcertstore_lookup() call. If the
+    location is specified as NULL, creates a pure-memory store, which you
     can work with by inserting certificates at runtime. The location is
     treated as a printf format.
     """
@@ -29,7 +29,7 @@ def new(location):
 @cdef('zcert_t * zcertstore_lookup (zcertstore_t *self, char *public_key);')
 def lookup(store, key):
     """
-    Look up certificate by public key, returns zcert_t object if found, 
+    Look up certificate by public key, returns zcert_t object if found,
     else returns NULL. The public key is provided in Z85 text format.
     """
     return C.zcertstore_lookup(store, key)
@@ -38,7 +38,7 @@ def lookup(store, key):
 @cdef('void zcertstore_insert (zcertstore_t *self, zcert_t **cert_p);')
 def insert(store, cert):
     """
-    Insert certificate into certificate store in memory. Note that this 
+    Insert certificate into certificate store in memory. Note that this
     does not save the certificate to disk. To do that, use zcert_save()
     directly on the certificate. Takes ownership of zcert_t object.
     """

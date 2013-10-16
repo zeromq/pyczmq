@@ -6,6 +6,12 @@ doesn't wrap the 0MQ socket type, to avoid breaking all libzmq
 socket-related calls.
 """
 
+# This port range is defined by IANA for dynamic or private ports
+# We use this when choosing a port for dynamic binding.
+DYNFROM = 49152
+DYNTO = 65535
+
+
 @cdef('void zsocket_destroy (zctx_t *self, void *socket);')
 def destroy(ctx, socket):
     """Destroy a socket within our CZMQ context.
@@ -15,7 +21,7 @@ def destroy(ctx, socket):
     unless you need to destroy sockets created by some other means
     (like a call directly to 'pyczmq.C.zsocket_new')
     """
-    return C.zsocket_destroy(ctx, socket)
+    C.zsocket_destroy(ctx, socket)
 
 
 @cdef('void * zsocket_new (zctx_t *self, int type);')
@@ -80,7 +86,7 @@ def poll(sock, msecs):
 @cdef('char * zsocket_type_str (void *socket);')
 def type_str(sock):
     """Returns socket type as printable constant string"""
-    return C.zsocket_type_str(sock)
+    return ffi.string(C.zsocket_type_str(sock))
 
 cdef('''
 
@@ -100,16 +106,16 @@ cdef('''
     http://czmq.zeromq.org.
 
     This is free software; you can redistribute it and/or modify it under
-    the terms of the GNU Lesser General Public License as published by the 
-    Free Software Foundation; either version 3 of the License, or (at your 
+    the terms of the GNU Lesser General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or (at your
     option) any later version.
 
     This software is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABIL-
-    ITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General 
+    ITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General
     Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License 
+    You should have received a copy of the GNU Lesser General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
     =========================================================================
 */

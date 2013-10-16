@@ -6,7 +6,7 @@ def test_zbeacon():
     #  Create a service socket and bind to an ephemeral port
     service = zsocket.new(ctx, zmq.PUSH)
     port_nbr = zsocket.bind(service, "inproc://foo")
-    
+
     #  Create beacon to broadcast our service
     announcement = str(port_nbr)
     service_beacon = zbeacon.new(9999)
@@ -25,3 +25,6 @@ def test_zbeacon():
     received_port = int(zframe.data(content))
     assert received_port == port_nbr
     zframe.destroy(content)
+
+    del service_beacon
+    del ctx

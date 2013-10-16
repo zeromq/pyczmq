@@ -34,8 +34,8 @@ def cdef(decl, returns_string=False, nullable=False):
         args, varargs, varkw, defaults = inspect.getargspec(f)
         defaults = () if defaults is None else defaults
         defaults = ["\"{}\"".format(a) if type(a) == str else a for a in defaults]
-        l = ["{}={}".format(arg, defaults[(idx+1)*-1]) 
-             if len(defaults)-1 >= idx else 
+        l = ["{}={}".format(arg, defaults[(idx+1)*-1])
+             if len(defaults)-1 >= idx else
              arg for idx, arg in enumerate(reversed(list(args)))]
         if varargs:
             l.append('*' + varargs)

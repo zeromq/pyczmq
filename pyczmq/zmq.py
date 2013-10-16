@@ -25,11 +25,11 @@ EVENT_CLOSE_FAILED = 256
 EVENT_DISCONNECTED = 512
 EVENT_MONITOR_STOPPED = 1024
 
-EVENT_ALL = (EVENT_CONNECTED | EVENT_CONNECT_DELAYED | 
-             EVENT_CONNECT_RETRIED | EVENT_LISTENING | 
-             EVENT_BIND_FAILED | EVENT_ACCEPTED | 
-             EVENT_ACCEPT_FAILED | EVENT_CLOSED | 
-             EVENT_CLOSE_FAILED | EVENT_DISCONNECTED | 
+EVENT_ALL = (EVENT_CONNECTED | EVENT_CONNECT_DELAYED |
+             EVENT_CONNECT_RETRIED | EVENT_LISTENING |
+             EVENT_BIND_FAILED | EVENT_ACCEPTED |
+             EVENT_ACCEPT_FAILED | EVENT_CLOSED |
+             EVENT_CLOSE_FAILED | EVENT_DISCONNECTED |
              EVENT_MONITOR_STOPPED)
 
 PAIR = 0
@@ -145,7 +145,7 @@ def strerror(num):
     """
     Resolves system errors and 0MQ errors to human-readable string.
     """
-    return Z.zmq_strerror(num)
+    return ffi.string(Z.zmq_strerror(num))
 
 
 @cdef('void *zmq_ctx_new (void);')
@@ -347,7 +347,7 @@ def pollitem(socket=None, fd=0, events=0, revents=0):
 
     Must set either socket or fd, if socket is set, fd is ignored.
     """
-    return ffi.new('zmq_pollitem_t*', 
+    return ffi.new('zmq_pollitem_t*',
                    dict(socket=socket, fd=fd,
                         events=events, revents=revents))
 

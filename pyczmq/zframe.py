@@ -1,5 +1,5 @@
 from __future__ import print_function
-from pyczmq._cffi import C, cdef, ptop, ffi
+from pyczmq._cffi import C, cdef, ffi, ptop
 
 __doc__ = """
 The zframe class provides methods to send and receive single message
@@ -24,40 +24,46 @@ DONTWAIT = 4
 def destroy(frame):
     """Destroy a frame
     """
-    return C.zframe_destroy(ptop('zframe_t', frame))
+    C.zframe_destroy(ptop('zframe_t', frame))
 
 
 @cdef('zframe_t * zframe_new (const void *data, size_t size);')
 def new(data):
     """Create a new frame with optional size, and optional data
+
+    Note, no gc wrapper, frames self-destruct by send.  If you don't
+    send a frame, you DO have to destroy() it.
     """
     return C.zframe_new(data, len(data))
 
 
 @cdef('zframe_t * zframe_new_empty (void);')
 def new_empty():
-    """Create an empty (zero-sized) frame
+    """Create an empty (zero-sized) frame.
+
+    Note, no gc wrapper, frames self-destruct by send.  If you don't
+    send a frame, you DO have to destroy() it.
     """
     return C.zframe_new_empty()
 
 
-@cdef('zframe_t * zframe_recv (void *socket);')
+@cdef('zframe_t * zframe_recv (void *socket);', nullable=True)
 def recv(sock):
     """
     Receive frame from socket, returns zframe_t object or NULL if the recv
     was interrupted. Does a blocking recv, if you want to not block then use
     zframe_recv_nowait().
     """
-    return  C.zframe_recv(sock)
+    return C.zframe_recv(sock)
 
 
-@cdef('zframe_t * zframe_recv_nowait (void *socket);')
+@cdef('zframe_t * zframe_recv_nowait (void *socket);', nullable=True)
 def recv_nowait(sock):
     """
     Receive a new frame off the socket. Returns newly allocated frame, or
     NULL if there was no input waiting, or if the read was interrupted.
     """
-    return  C.zframe_recv_nowait(sock)
+    return C.zframe_recv_nowait(sock)
 
 
 @cdef('int zframe_send (zframe_t **self_p, void *socket, int flags);')
@@ -66,7 +72,7 @@ def send(frame, socket, flags):
     Send a frame to a socket, destroy frame after sending.
     Return -1 on error, 0 on success.
     """
-    return C.zframe_send(frame, socket, flags)
+    return C.zframe_send(ptop('zframe_t', frame), socket, flags)
 
 
 @cdef('size_t zframe_size (zframe_t *self);')
@@ -78,7 +84,7 @@ def size(frame):
 
 @cdef('void * zframe_data (zframe_t *self);')
 def data(frame):
-    """Return address of frame data
+    """Return frame data
     """
     return ffi.buffer(C.zframe_data(frame), C.zframe_size(frame))
 
@@ -97,7 +103,7 @@ def strhex(frame):
     return C.zframe_strhex(frame)
 
 
-@cdef('char * zframe_strdup (zframe_t *self);')
+@cdef('char * zframe_strdup (zframe_t *self);', returns_string=True)
 def strdup(frame):
     """Return frame data copied into freshly allocated string
     """
@@ -108,7 +114,7 @@ def strdup(frame):
 def streq(frame, string):
     """Return TRUE if frame body is equal to string, excluding terminator
     """
-    return  C.zframe_streq(frame, string)
+    return C.zframe_streq(frame, string)
 
 
 @cdef('int zframe_more (zframe_t *self);')
@@ -117,16 +123,16 @@ def more(frame):
     Return frame MORE indicator (1 or 0), set when reading frame from
     socket or by the zframe_set_more() method
     """
-    return  C.zframe_more(frame)
+    return C.zframe_more(frame)
 
 
 @cdef('void zframe_set_more (zframe_t *self, int more);')
 def set_more(frame, more):
     """
-    Set frame MORE indicator (1 or 0). Note this is NOT used when sending 
+    Set frame MORE indicator (1 or 0). Note this is NOT used when sending
     frame to socket, you have to specify flag explicitly.
     """
-    return C.zframe_set_more(frame, more)
+    C.zframe_set_more(frame, more)
 
 
 @cdef('bool zframe_eq (zframe_t *self, zframe_t *other);')
@@ -135,12 +141,12 @@ def eq(frame, other):
     Return TRUE if two frames have identical size and data
     If either frame is NULL, equality is always false.
     """
-    return  C.zframe_eq(frame, other)
+    return C.zframe_eq(frame, other)
 
 
 @cdef('void zframe_reset (zframe_t *self, const void *data, size_t size);')
 def reset(frame, string):
     """Set new contents for frame
     """
-    return  C.zframe_reset(frame, string, len(string))
+    C.zframe_reset(frame, string, len(string))
 

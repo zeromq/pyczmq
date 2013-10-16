@@ -33,7 +33,8 @@ def new(port):
 
 @cdef('char * zbeacon_hostname (zbeacon_t *self);', returns_string=True)
 def hostname(beacon):
-    """Returns the hostname string for this beacon's interface """
+    """Returns the hostname string for this beacon's interface
+    """
     return C.zbeacon_hostname(beacon)
 
 

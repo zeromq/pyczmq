@@ -34,7 +34,9 @@ def destroy(ctx):
     """
     Destroy context and all sockets in it
     """
-    return C.zctx_destroy(ptop('zctx_t', ctx))
+    #if ctx is not ffi.NULL:
+    C.zctx_destroy(ptop('zctx_t', ctx))
+    #return ffi.NULL
 
 
 @cdef('zctx_t * zctx_new (void);')
@@ -71,14 +73,13 @@ def set_linger(ctx, linger):
 def set_pipehwm(ctx, pipehwm):
     """
     Set initial high-water mark for inter-thread pipe sockets. Note that
-    this setting is separate from the default for normal sockets. You 
+    this setting is separate from the default for normal sockets. You
     should change the default for pipe sockets *with care*. Too low values
     will cause blocked threads, and an infinite setting can cause memory
     exhaustion. The default, no matter the underlying ZeroMQ version, is
     1,000.
     """
     return C.zctx_set_pipehwm(ctx, pipehwm)
-    
 
 
 @cdef('void zctx_set_sndhwm (zctx_t *self, int sndhwm);')

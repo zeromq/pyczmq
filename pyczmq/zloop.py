@@ -18,13 +18,15 @@ def destroy(loop):
     Destroy a reactor, this is not necessary if you create it with
     new.
     """
-    return C.zloop_destroy(ptop('zloop_t', loop))
+    if loop is not ffi.NULL:
+        C.zloop_destroy(ptop('zloop_t', loop))
+    return ffi.NULL
 
 
 @cdef(' zloop_t * zloop_new (void);')
 def new():
     """Create a new zloop reactor"""
-    return ffi.gc(C.zloop_new(), destroy)
+    return C.zloop_new()
 
 
 @cdef('int zloop_poller (zloop_t *self, zmq_pollitem_t *item,'
@@ -53,7 +55,7 @@ def poller_end(loop, item):
 @cdef('void zloop_set_tolerant (zloop_t *self, zmq_pollitem_t *item);')
 def set_tolerant(loop, item):
     """
-    Configure a registered pollitem to ignore errors. If you do not set this, 
+    Configure a registered pollitem to ignore errors. If you do not set this,
     then pollitems that have errors are removed from the reactor silently.
     """
     return C.zloop_set_tolerant(loop, item)
