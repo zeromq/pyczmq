@@ -7,24 +7,21 @@ cdef('typedef struct _zcert_t zcert_t;')
 def destroy(cert):
     """Destroy a certificate in memory
     """
-    if cert is not ffi.NULL:
-        C.zcert_destroy(ptop('zcert_t', cert))
-    return ffi.NULL
+    C.zcert_destroy(ptop('zcert_t', cert))
 
 
 @cdef('zcert_t * zcert_new (void);')
 def new():
     """Create and initialize a new certificate in memory
     """
-    return C.zcert_new()
+    return ffi.gc(C.zcert_new(), destroy)
 
 
 @cdef('zcert_t * zcert_new_from (char *public_key, char *secret_key);')
 def new_from(public_key, secret_key):
     """Constructor, accepts public/secret key pair from caller
     """
-    #return ffi.gc(C.zcert_new_from(public_key, secret_key), destroy)
-    return C.zcert_new_from(public_key, secret_key)
+    return ffi.gc(C.zcert_new_from(public_key, secret_key), destroy)
 
 
 @cdef('char * zcert_public_key (zcert_t *self);')
@@ -46,7 +43,7 @@ def public_txt(cert):
     """
     Return public part of key pair as Z85 armored string
     """
-    return C.zcert_public_txt(cert)
+    return ffi.string(C.zcert_public_txt(cert))
 
 
 @cdef('char * zcert_secret_txt (zcert_t *self);')
@@ -54,16 +51,16 @@ def secret_txt(cert):
     """
     Return secret part of key pair as Z85 armored string
     """
-    return C.zcert_secret_txt(cert)
+    return ffi.string(C.zcert_secret_txt(cert))
 
 
 @cdef('void zcert_set_meta (zcert_t *self, char *name, char *format, ...);',
       nullable=True)
-def set_meta(self, name, fmt):
+def set_meta(cert, name, value):
     """
     Set certificate metadata from formatted string.
     """
-    return C.zcert_set_meta
+    return C.zcert_set_meta(cert, name, value)
 
 
 @cdef('char * zcert_meta (zcert_t *self, char *name);')
@@ -72,19 +69,19 @@ def meta(cert, name):
     Get metadata value from certificate; if the metadata value doesn
     exist, returns NULL.
     """
-    return C.zcert_meta(cert, meta)
+    return ffi.string(C.zcert_meta(cert, name))
 
 
-@cdef('zcert_t * zcert_load (char *filename, ...);')
+@cdef('zcert_t * zcert_load (char *fmt, ...);')
 def load(filename):
     """
     Load certificate from file (constructor) The filename is treated
     as a printf format specifier.
     """
-    return  C.zcert_load(filename)
+    return C.zcert_load(filename)
 
 
-@cdef('int zcert_save (zcert_t *self, char *filename, ...);')
+@cdef('int zcert_save (zcert_t *self, char *fmt, ...);')
 def save(cert, filename):
     """
     Save full certificate (public + secret) to file for persistent
@@ -92,9 +89,7 @@ def save(cert, filename):
     + "_secret").  The filename is treated as a printf format
     specifier.
     """
-    return  C.zcert_save(cert, filename)
-
-
+    return C.zcert_save(cert, filename)
 
 
 @cdef('int zcert_save_public (zcert_t *self, char *filename, ...);')
@@ -113,7 +108,7 @@ def apply(cert, zocket):
     If certificate was loaded from public file, the secret key will be
     undefined, and this certificate will not work successfully.
     """
-    return C.zcert_apply(cert, zocket)
+    C.zcert_apply(cert, zocket)
 
 
 @cdef('zcert_t * zcert_dup (zcert_t *self);')

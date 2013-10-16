@@ -36,5 +36,5 @@ def test_zpoller(verbose=False):
     assert message == "Hello, World", "unexpected message recevied"
 
     # Destroy poller and context
-    poller = zpoller.destroy(poller)
-    ctx = zctx.destroy(ctx)
+    del poller
+    del ctx

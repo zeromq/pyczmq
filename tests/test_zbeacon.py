@@ -26,5 +26,5 @@ def test_zbeacon():
     assert received_port == port_nbr
     zframe.destroy(content)
 
-    zbeacon.destroy(service_beacon)
-    zctx.destroy(ctx)
+    del service_beacon
+    del ctx

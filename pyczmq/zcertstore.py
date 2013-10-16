@@ -9,9 +9,7 @@ def destroy(store):
     Destroy a certificate store object in memory. Does not affect anything
     stored on disk.
     """
-    if store is not ffi.NULL:
-        C.zcertstore_destroy(ptop('zcertstore_t', store))
-    return ffi.NULL
+    C.zcertstore_destroy(ptop('zcertstore_t', store))
 
 
 @cdef('zcertstore_t * zcertstore_new (char *location, ...);')
@@ -25,7 +23,7 @@ def new(location):
     can work with by inserting certificates at runtime. The location is
     treated as a printf format.
     """
-    return C.zcertstore_new(location)
+    return ffi.gc(C.zcertstore_new(location), destroy)
 
 
 @cdef('zcert_t * zcertstore_lookup (zcertstore_t *self, char *public_key);')

@@ -4,13 +4,12 @@ Replicates czmq test_zctx
 
 from pyczmq import ffi, zctx, zmq, zsocket
 
-def test_ctx():
+def test_zctx():
 
     # Create and destroy a context without using it
     ctx = zctx.new()
     assert ctx
-    ctx = zctx.destroy(ctx)
-    assert ctx == ffi.NULL
+    del ctx
 
     # Create a context with many busy sockets, destroy it
     ctx = zctx.new()
@@ -37,5 +36,4 @@ def test_ctx():
     zsocket.connect(s6, "tcp://127.0.0.1:5555")
 
     assert zctx.underlying(ctx);
-    ctx = zctx.destroy(ctx)
-    assert ctx == ffi.NULL
+    del ctx

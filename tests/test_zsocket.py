@@ -72,5 +72,5 @@ def test_zsocket():
     assert not zframe.more(frame)
     zframe.destroy(frame)
 
-    zsocket.destroy(ctx, writer)
-    zctx.destroy(ctx)
+    del writer
+    del ctx

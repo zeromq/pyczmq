@@ -24,21 +24,25 @@ DONTWAIT = 4
 def destroy(frame):
     """Destroy a frame
     """
-    if frame is not ffi.NULL:
-        C.zframe_destroy(ptop('zframe_t', frame))
-    return ffi.NULL
+    C.zframe_destroy(ptop('zframe_t', frame))
 
 
 @cdef('zframe_t * zframe_new (const void *data, size_t size);')
 def new(data):
     """Create a new frame with optional size, and optional data
+
+    Note, no gc wrapper, frames self-destruct by send.  If you don't
+    send a frame, you DO have to destroy() it.
     """
     return C.zframe_new(data, len(data))
 
 
 @cdef('zframe_t * zframe_new_empty (void);')
 def new_empty():
-    """Create an empty (zero-sized) frame
+    """Create an empty (zero-sized) frame.
+
+    Note, no gc wrapper, frames self-destruct by send.  If you don't
+    send a frame, you DO have to destroy() it.
     """
     return C.zframe_new_empty()
 

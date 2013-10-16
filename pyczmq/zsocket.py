@@ -21,9 +21,7 @@ def destroy(ctx, socket):
     unless you need to destroy sockets created by some other means
     (like a call directly to 'pyczmq.C.zsocket_new')
     """
-    if socket is not ffi.NULL:
-        C.zsocket_destroy(ctx, socket)
-    return ffi.NULL
+    C.zsocket_destroy(ctx, socket)
 
 
 @cdef('void * zsocket_new (zctx_t *self, int type);')
@@ -34,7 +32,7 @@ def new(ctx, typ):
     Note: SUB sockets do not automatically subscribe to everything;
     you must set filters explicitly.
     """
-    return C.zsocket_new(ctx, typ)
+    return ffi.gc(C.zsocket_new(ctx, typ), lambda s: destroy(ctx, s))
 
 
 @cdef('int zsocket_bind (void *socket, const char *format, ...);')

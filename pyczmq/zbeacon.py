@@ -21,16 +21,14 @@ cdef('typedef struct _zbeacon_t zbeacon_t;')
 def destroy(beacon):
     """Destroy a beacon
     """
-    if beacon is not ffi.NULL:
-        C.zbeacon_destroy(ptop('zbeacon_t', beacon))
-    return ffi.NULL
+    C.zbeacon_destroy(ptop('zbeacon_t', beacon))
 
 
 @cdef('zbeacon_t * zbeacon_new (int port_nbr);')
 def new(port):
     """Create a new beacon on a certain UDP port
     """
-    return C.zbeacon_new(port)
+    return ffi.gc(C.zbeacon_new(port), destroy)
 
 
 @cdef('char * zbeacon_hostname (zbeacon_t *self);', returns_string=True)

@@ -34,9 +34,9 @@ def destroy(ctx):
     """
     Destroy context and all sockets in it
     """
-    if ctx is not ffi.NULL:
-        C.zctx_destroy(ptop('zctx_t', ctx))
-    return ffi.NULL
+    #if ctx is not ffi.NULL:
+    C.zctx_destroy(ptop('zctx_t', ctx))
+    #return ffi.NULL
 
 
 @cdef('zctx_t * zctx_new (void);')
@@ -44,7 +44,7 @@ def new():
     """
     Create new context.
     """
-    return C.zctx_new()
+    return ffi.gc(C.zctx_new(), destroy)
 
 
 @cdef('void zctx_set_iothreads (zctx_t *self, int iothreads);')

@@ -22,7 +22,7 @@ def s_can_connect(server, client):
 
     poller = zpoller.new(client)
     success = zpoller.wait(poller, 100) == client
-    poller = zpoller.destroy(poller)
+    del poller
 
     rc = zsocket.unbind(server, "tcp://*:{}".format(PORT_NBR))
     assert rc != -1
@@ -116,20 +116,16 @@ def test_zauth(verbose=False):
     success = s_can_connect(server, client)
     assert success, "Unexpected connection failure: client authentication test"
 
-    # There is currently something wrong with manually calling
-    # delete. Probably something to do with hooking the delete
-    # to ffi.gc ??
-    #
-    server_cert = zcert.destroy(server_cert)
-    client_cert = zcert.destroy(client_cert)
+    del server_cert
+    del client_cert
 
     # Remove the authenticator and check a normal connection works
-    auth = zauth.destroy(auth)
+    del auth
 
     success = s_can_connect(server, client)
     assert success, "Unexpected connection failure: no authenticator test"
 
-    ctx = zctx.destroy(ctx)
+    del ctx
 
     # Delete all test files
     shutil.rmtree(TESTDIR)

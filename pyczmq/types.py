@@ -46,9 +46,6 @@ class Frame(object):
     def bytes(self):
         return zframe.data(self.frame)[:]
 
-    def destroy(self):
-        self.frame = zframe.destroy(self.frame)
-
     def dup(self):
         return Frame(frame=zframe.dup(self.frame))
 
@@ -82,9 +79,6 @@ class Message(object):
 
     def __len__(self):
         return zmsg.size(self.msg)
-
-    def destroy(self):
-        self.msg = zmsg.destroy(self.msg)
 
     def content_size(self):
         return zmsg.content_size(self.msg)
@@ -170,9 +164,6 @@ class Socket(object):
     def type(self):
         return zsocket.type_str(self.sock)
 
-    def destroy(self):
-        self.sock = zsocket.destroy(self.ctx, self.sock)
-
     def connect(self, endpoint):
         return zsocket.connect(self.sock, endpoint)
 
@@ -232,9 +223,6 @@ class Context(object):
         self.ctx = zctx.new()
         zctx.set_iothreads(self.ctx, iothreads)
 
-    def destroy(self):
-        self.ctx = zctx.destroy(self.ctx)
-
     def set_iothreads(self, thread_count):
         zctx.set_iothreads(self.ctx, thread_count)
 
@@ -263,9 +251,6 @@ class Loop(object):
 
     def __init__(self):
         self.loop = zloop.new()
-
-    def __del__(self):
-        self.loop = zloop.destroy(self.loop)
 
     def set_tolerant(self, item):
         zloop.set_tolerant(self.loop, item)

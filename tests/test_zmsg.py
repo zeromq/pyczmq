@@ -36,4 +36,6 @@ def test_zmsg():
     assert zframe.data(zmsg.next(n))[:] == 'ding'
     assert zframe.data(zmsg.next(n))[:] == 'dong'
     assert zmsg.next(n) is None
+
     zmsg.destroy(n)
+

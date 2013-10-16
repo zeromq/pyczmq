@@ -35,5 +35,5 @@ def test_zloop(verbose=False):
     zloop.set_tolerant(l, poll_input)
     zloop.start(l)
 
-    l = zloop.destroy(l)
-    ctx = zctx.destroy(ctx)
+    del l
+    del ctx

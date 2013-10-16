@@ -3,14 +3,13 @@ Test high-level API
 """
 
 import time
-from pyczmq import ffi, zmq, Context, Loop, Socket, Frame, Message
-from pyczmq import zstr, zsocket
+from pyczmq import ffi, zmq, Context, Loop, Frame, Message, zsocket
 
 
 def test_context():
     # Create and destroy a context without using it
     ctx = Context()
-    ctx.destroy()
+    del ctx
 
     # call API functions
     ctx = Context()
@@ -19,7 +18,7 @@ def test_context():
     ctx.set_pipehwm(500)
     ctx.set_sndhwm(500)
     ctx.set_rcvhwm(500)
-    ctx.destroy()
+    del ctx
 
 
 def test_socket():
@@ -81,16 +80,16 @@ def test_socket():
     frame = reader.recv_frame()
     assert frame == "ABC"
     assert frame.more()
-    frame.destroy()
+    del frame
 
     frame = reader.recv_frame()
     assert frame == "DEFG"
     assert not frame.more()
-    frame.destroy()
+    del frame
 
-    writer.destroy()
-    reader.destroy()
-    ctx.destroy()
+    del writer
+    del reader
+    del ctx
 
 
 def test_frame():
@@ -121,13 +120,13 @@ def test_frame():
     frame.reset("")
     assert frame != copy
     assert len(copy) == 5
-    frame.destroy()
-    copy.destroy()
+    del frame
+    del copy
 
     # Test zframe_new_empty
     frame = Frame()
     assert len(frame) == 0
-    frame.destroy()
+    del frame
 
     # Send END frame
     frame = Frame("NOT")
@@ -149,7 +148,7 @@ def test_frame():
         frame = input_s.recv_frame()
         frame_nbr += 1
         if frame == "END":
-            frame.destroy()
+            del frame
             break
         else:
             assert len(frame) == 5
@@ -157,12 +156,12 @@ def test_frame():
         assert frame.more()
         frame.set_more(0)
         assert frame.more() == 0
-        frame.destroy()
+        del frame
     assert frame_nbr == 11
     frame = input_s.recv_frame_nowait()
     assert frame is None
 
-    ctx = ctx.destroy()
+    del ctx
 
 
 def test_message():
@@ -189,7 +188,7 @@ def test_message():
     msg = input_s.recv_msg()
     assert len(msg) == 1
     assert msg.content_size() == 5
-    msg.destroy()
+    del msg
 
     msg = Message()
     for i in range(0, 10):
@@ -205,7 +204,7 @@ def test_message():
     copy = input_s.recv_msg()
     assert len(copy) == 10
     assert copy.content_size() == 60
-    copy.destroy()
+    del copy
 
     msg = input_s.recv_msg()
     assert len(msg) == 10
@@ -213,11 +212,11 @@ def test_message():
 
     for i in range(0, 10):
         assert msg.next() == "Frame{}".format(i)
-    msg.destroy()
+    del msg
 
     #TODO: continue adding remaining class function tests
 
-    ctx.destroy()
+    del ctx
 
 
 def _test_loop(verbose=False):
@@ -228,9 +227,8 @@ def _test_loop(verbose=False):
     def on_socket_event(loop, item, arg):
         # typically arg would be some class object containing state
         # information that would be used within this event handler.
-        #input_s = ffi.from_handle(arg)
-        #assert input_s.recv() == 'PING'
-        assert zstr.recv(arg) == 'PING'
+        input_s = ffi.from_handle(arg)
+        assert input_s.recv() == 'PING'
         return -1  # end the reactor
 
     def on_timer_event(loop, item, arg):
@@ -258,5 +256,5 @@ def _test_loop(verbose=False):
 
     loop.start()
 
-    loop.destroy()
-    ctx.destroy()
+    del loop
+    del ctx

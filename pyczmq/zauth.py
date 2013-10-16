@@ -10,9 +10,7 @@ cdef('typedef struct _zauth_t zauth_t;')
 @cdef('void zauth_destroy (zauth_t **self_p);')
 def destroy(auth):
     """ Destructor """
-    if auth is not ffi.NULL:
-        C.zauth_destroy(ptop('zauth_t', auth))
-    return ffi.NULL
+    C.zauth_destroy(ptop('zauth_t', auth))
 
 
 @cdef('zauth_t * zauth_new (zctx_t *ctx);')
@@ -25,7 +23,7 @@ def new(ctx):
     connections are denied. If there was an error during
     initialization, returns NULL.
     """
-    return C.zauth_new(ctx)
+    return ffi.gc(C.zauth_new(ctx), destroy)
 
 
 @cdef('void zauth_allow (zauth_t *self, char *address);')

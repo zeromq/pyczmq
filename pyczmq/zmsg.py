@@ -15,9 +15,7 @@ cdef('typedef struct _zmsg_t zmsg_t;')
 def destroy(m):
     """Destroy a message object and all frames it contains
     """
-    if m is not ffi.NULL:
-        C.zmsg_destroy(ptop('zmsg_t', m))
-    return ffi.NULL
+    C.zmsg_destroy(ptop('zmsg_t', m))
 
 @cdef('zmsg_t * zmsg_new (void);')
 def new():

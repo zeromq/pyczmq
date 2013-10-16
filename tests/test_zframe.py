@@ -74,4 +74,4 @@ def test_zframe():
     frame = zframe.recv_nowait(input_s)
     assert frame is None
 
-    ctx = zctx.destroy(ctx)
+    del ctx
