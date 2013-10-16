@@ -83,9 +83,3 @@ over by various functions in zmsg and are destroyed when the msg is
 sent and destroyed.  If you create these objects and don't in turn
 call the functions that destroy them, you must explicitly destroy them
 yourself with zmsg.destroy or zframe.destroy.
-
-Like what you see?  If you feel like leaving me or other open source
-developers a tip for our work, please visit gittip:
-
-https://www.gittip.com/michelp/
-
