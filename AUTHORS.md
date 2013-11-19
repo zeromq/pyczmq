@@ -6,4 +6,7 @@ pyczmq authors:
 
   - Pieter Hintjens (https://github.com/hintjens)
 
+  - Michael Haberler (https://github.com/mhaberler)
+
+
 
