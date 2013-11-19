@@ -9,12 +9,12 @@ def test_zbeacon():
 
     #  Create beacon to broadcast our service
     announcement = str(port_nbr)
-    service_beacon = zbeacon.new(9999)
+    service_beacon = zbeacon.new(ctx, 9999)
     zbeacon.set_interval(service_beacon, 100)
     zbeacon.publish(service_beacon, announcement)
 
     #  Create beacon to lookup service
-    client_beacon = zbeacon.new (9999)
+    client_beacon = zbeacon.new (ctx, 9999)
     zbeacon.subscribe(client_beacon, '')
 
     #  Wait for at most 1/2 second if there's no broadcast networking

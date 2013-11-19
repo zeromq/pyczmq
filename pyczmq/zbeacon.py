@@ -24,11 +24,11 @@ def destroy(beacon):
     C.zbeacon_destroy(ptop('zbeacon_t', beacon))
 
 
-@cdef('zbeacon_t * zbeacon_new (int port_nbr);')
-def new(port):
+@cdef('zbeacon_t * zbeacon_new (zctx_t *self, int port_nbr);')
+def new(ctx, port):
     """Create a new beacon on a certain UDP port
     """
-    return ffi.gc(C.zbeacon_new(port), destroy)
+    return ffi.gc(C.zbeacon_new(ctx, port), destroy)
 
 
 @cdef('char * zbeacon_hostname (zbeacon_t *self);', returns_string=True)
