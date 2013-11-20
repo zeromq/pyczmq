@@ -20,7 +20,7 @@ def test_zloop(verbose=False):
 
     @ffi.callback('zloop_fn')
     def on_timer_event(loop, item, arg):
-        zstr.send(arg, 'PING')
+        zstr.send(ffi.from_handle(arg), 'PING')
         return 0
 
     l = zloop.new()

@@ -69,7 +69,7 @@ def timer(loop, delay, times, handler, arg):
     run a timer forever, use 0 times. Returns 0 if OK, -1 if there was an
     error.
     """
-    return C.zloop_timer(loop, delay, times, handler, arg)
+    return C.zloop_timer(loop, delay, times, handler, ffi.new_handle(arg))
 
 
 @cdef('int zloop_timer_end (zloop_t *self, void *arg);')
