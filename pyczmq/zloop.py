@@ -12,6 +12,13 @@ cdef('typedef struct _zloop_t zloop_t;')
 cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
 
 
+def callback(f):
+    @ffi.callback('zloop_fn')
+    def handler(loop, item, arg):
+        return f(loop, item, ffi.from_handle(arg))
+    return handler
+
+
 @cdef('void zloop_destroy (zloop_t **self_p);')
 def destroy(loop):
     """
