@@ -10,6 +10,21 @@ tickless timer to reduce CPU interrupts in inactive processes.
 
 cdef('typedef struct _zloop_t zloop_t;')
 cdef('typedef int (zloop_fn) (zloop_t *loop, zmq_pollitem_t *item, void *arg);')
+cdef('typedef int (zloop_timer_fn) (zloop_t *loop, int timer_id, void *arg);')
+
+
+def poll_callback(f):
+    @ffi.callback('zloop_fn')
+    def handler(loop, item, arg):
+        return f(loop, item, ffi.from_handle(arg))
+    return handler
+
+
+def timer_callback(f):
+    @ffi.callback('zloop_timer_fn')
+    def handler(loop, timer_id, arg):
+        return f(loop, timer_id, ffi.from_handle(arg))
+    return handler
 
 
 @cdef('void zloop_destroy (zloop_t **self_p);')
@@ -61,21 +76,21 @@ def set_tolerant(loop, item):
     return C.zloop_set_tolerant(loop, item)
 
 
-@cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_fn handler, void *arg);')
+@cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_timer_fn handler, void *arg);')
 def timer(loop, delay, times, handler, arg):
     """
     Register a timer that expires after some delay and repeats some number of
     times. At each expiry, will call the handler, passing the arg. To
-    run a timer forever, use 0 times. Returns 0 if OK, -1 if there was an
+    run a timer forever, use 0 times. Returns a timer_id or -1 if there was an
     error.
     """
-    return C.zloop_timer(loop, delay, times, handler, arg)
+    return C.zloop_timer(loop, delay, times, handler, ffi.new_handle(arg))
 
 
-@cdef('int zloop_timer_end (zloop_t *self, void *arg);')
+@cdef('int zloop_timer_end (zloop_t *self, int timer_id);')
 def timer_end(loop, arg):
     """
-    Cancel all timers for a specific argument (as provided in zloop_timer)
+    Cancel a specific timer (as provided by zloop_timer)
     """
     return C.zloop_timer_end(loop, arg)
 
