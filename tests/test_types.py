@@ -229,21 +229,18 @@ def test_message():
 # Problem occurs when CZMQ calls the handler function.
 # Perhaps we need to maintain a reference to the cdata
 # returned from ffi.new_handle(arg)
-def _test_loop(verbose=False):
+def test_loop(verbose=False):
 
-    @zloop.timer_callback
     def on_cancel_timer_event(loop, timer_id, arg):
         cancel_timer_id = arg
         zloop.timer_end(loop, cancel_timer_id)
         return 0
 
-    @zloop.timer_callback
     def on_timer_event(loop, item, arg):
         output_s = ffi.from_handle(arg)
         output_s.send('PING')
         return 0
 
-    @zloop.poll_callback
     def on_socket_event(loop, item, arg):
         # typically arg would be some class object containing state
         # information that would be used within this event handler.
