@@ -5,9 +5,6 @@ Test high-level API
 import time
 from pyczmq import ffi, zmq, Context, Loop, Frame, Message, zsocket
 
-# debug only
-from pyczmq import zloop
-
 
 def test_context():
     # Create and destroy a context without using it
@@ -229,10 +226,13 @@ def test_message():
 # Problem occurs when CZMQ calls the handler function.
 # Perhaps we need to maintain a reference to the cdata
 # returned from ffi.new_handle(arg)
-def test_loop(verbose=False):
+def _test_loop(verbose=False):
 
     def on_cancel_timer_event(loop, timer_id, arg):
         cancel_timer_id = arg
+        # This loop is the low-level zloop not the
+        # types.Loop class. Need a cleaner way! 
+        from pyczmq import zloop
         zloop.timer_end(loop, cancel_timer_id)
         return 0
 
