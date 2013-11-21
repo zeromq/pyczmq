@@ -12,13 +12,13 @@ def test_zloop(verbose=False):
     zsocket.bind(output_s, 'inproc://lkj')
     zsocket.connect(input_s, 'inproc://lkj')
 
-    @ffi.callback('zloop_fn')
+    @zloop.callback
     def on_socket_event(loop, item, arg):
         assert zstr.recv(item.socket) == 'PING'
-        assert ffi.from_handle(arg) == 3
+        assert arg == 3
         return -1
 
-    @ffi.callback('zloop_fn')
+    @zloop.callback
     def on_timer_event(loop, item, arg):
         zstr.send(arg, 'PING')
         return 0
