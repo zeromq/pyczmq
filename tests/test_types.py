@@ -219,10 +219,27 @@ def test_message():
     del ctx
 
 
+
+
+# TODO: this test function is not working properly!
+# Segfault occurs when trying to call timer callback.
+# Problem occurs when CZMQ calls the handler function.
+# Perhaps we need to maintain a reference to the cdata
+# returned from ffi.new_handle(arg)
 def _test_loop(verbose=False):
 
-    # TODO: this test function is not working properly!
-    # segfault occurs when trying to call timer callback.
+    def on_cancel_timer_event(loop, timer_id, arg):
+        cancel_timer_id = arg
+        # This loop is the low-level zloop not the
+        # types.Loop class. Need a cleaner way! 
+        from pyczmq import zloop
+        zloop.timer_end(loop, cancel_timer_id)
+        return 0
+
+    def on_timer_event(loop, item, arg):
+        output_s = ffi.from_handle(arg)
+        output_s.send('PING')
+        return 0
 
     def on_socket_event(loop, item, arg):
         # typically arg would be some class object containing state
@@ -231,10 +248,6 @@ def _test_loop(verbose=False):
         assert input_s.recv() == 'PING'
         return -1  # end the reactor
 
-    def on_timer_event(loop, item, arg):
-        output_s = ffi.from_handle(arg)
-        output_s.send('PING')
-        return 0
 
     ctx = Context()
     output_s = ctx.socket(zmq.PAIR)
@@ -245,8 +258,12 @@ def _test_loop(verbose=False):
     loop = Loop()
     loop.set_verbose(verbose)
 
+    # create a timer that will be cancelled
+    cancel_timer_id = loop.timer(1000, 1, on_timer_event, None)
+    loop.timer(5, 1, on_cancel_timer_event, cancel_timer_id)
+
     # After 10 msecs, send a ping message to output
-    loop.timer(10, 1, on_timer_event, output_s.sock)
+    loop.timer(20, 1, on_timer_event, output_s.sock)
 
     poll_input = zmq.pollitem(socket=input_s.sock, events=zmq.POLLIN)
 

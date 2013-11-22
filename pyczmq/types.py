@@ -262,21 +262,18 @@ class Loop(object):
         zloop.start(self.loop)
 
     def poller(self, poll_item, handler, arg=None):
-        callback = ffi.callback('zloop_fn', handler)
-        arg_handle = ffi.new_handle(arg)
-        return zloop.poller(self.loop, poll_item, callback, arg_handle)
-
+        callback = zloop.poll_callback(handler)
+        return zloop.poller(self.loop, poll_item, callback, arg)
+        
     def poller_end(self, poll_item):
-        return zloop.poller_end(self.loop, poll_item)
+        zloop.poller_end(self.loop, poll_item)
 
     def timer(self, delay, times, handler, arg=None):
-        callback = ffi.callback('zloop_fn', handler)
-        arg_handle = ffi.new_handle(arg)
-        return zloop.timer(self.loop, delay, times, callback, arg_handle)
+        callback = zloop.timer_callback(handler)
+        return zloop.timer(self.loop, delay, times, callback, arg)
 
-    def timer_end(self, arg):
-        arg_handle = ffi.new_handle(arg)
-        zloop.timer_end(self.loop, arg_handle)
+    def timer_end(self, timer_id):
+        zloop.timer_end(self.loop, timer_id)
 
 
 class Beacon(object):
