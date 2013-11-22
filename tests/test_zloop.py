@@ -12,23 +12,23 @@ def test_zloop(verbose=False):
     zsocket.bind(output_s, 'inproc://lkj')
     zsocket.connect(input_s, 'inproc://lkj')
 
-    @zloop.timer_callback
-    def on_cancel_timer_event(loop, item, arg):
-        cancel_timer_id = arg
-        rc = zloop.timer_end(loop, cancel_timer_id)
-        assert (rc == 0)
-        return 0
+    @zloop.poll_callback
+    def on_socket_event(loop, item, arg):
+        assert zstr.recv(item.socket) == 'PING'
+        assert arg == 3
+        return -1
 
     @zloop.timer_callback
     def on_timer_event(loop, item, arg):
         zstr.send(arg, 'PING')
         return 0
 
-    @zloop.poll_callback
-    def on_socket_event(loop, item, arg):
-        assert zstr.recv(item.socket) == 'PING'
-        assert arg == 3
-        return -1
+    @zloop.timer_callback
+    def on_cancel_timer_event(loop, item, arg):
+        cancel_timer_id = arg
+        rc = zloop.timer_end(loop, cancel_timer_id)
+        assert (rc == 0)
+        return 0
 
     l = zloop.new()
     zloop.set_verbose(l, verbose)
