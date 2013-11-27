@@ -122,7 +122,6 @@ cdef('''
 
  int zsocket_ipv6 (void *zocket);
  int zsocket_ipv4only (void *zocket);
- int zsocket_probe_router (void *zocket);
  int zsocket_plain_server (void *zocket);
  char * zsocket_plain_username (void *zocket);
  char * zsocket_plain_password (void *zocket);
@@ -165,6 +164,7 @@ cdef('''
  void zsocket_set_ipv4only (void *zocket, int ipv4only);
  void zsocket_set_delay_attach_on_connect (void *zocket, int delay_attach_on_connect);
  void zsocket_set_router_mandatory (void *zocket, int router_mandatory);
+ void zsocket_set_probe_router (void *zocket, int probe_router);
  void zsocket_set_req_relaxed (void *zocket, int req_relaxed);
  void zsocket_set_req_correlate (void *zocket, int req_correlate);
  void zsocket_set_conflate (void *zocket, int conflate);
@@ -212,7 +212,6 @@ int zsockopt_test (bool verbose);
 
 ipv6 = C.zsocket_ipv6
 ipv4only = C.zsocket_ipv4only
-probe_router = C.zsocket_probe_router
 plain_server = C.zsocket_plain_server
 plain_username = C.zsocket_plain_username
 plain_password = C.zsocket_plain_password
@@ -254,6 +253,7 @@ set_router_raw = C.zsocket_set_router_raw
 set_ipv4only =C.zsocket_set_ipv4only
 set_delay_attach_on_connect = C.zsocket_set_delay_attach_on_connect
 set_router_mandatory = C.zsocket_set_router_mandatory
+set_probe_router = C.zsocket_set_probe_router
 set_req_relaxed = C.zsocket_set_req_relaxed
 set_req_correlate = C.zsocket_set_req_correlate
 set_conflate = C.zsocket_set_conflate
