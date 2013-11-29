@@ -1,4 +1,4 @@
-from _cffi import C, ffi
+from ._cffi import C, ffi
 
 from . import (
     zmq,
@@ -15,6 +15,6 @@ from . import (
     zcertstore,
     )
 
-from types import Context, Socket, Frame, Message, Loop, Beacon
+from .types import Context, Socket, Frame, Message, Loop, Beacon
 
 
