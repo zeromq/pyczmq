@@ -1,4 +1,7 @@
 # PYCZMQ
+#
+# After modifying this file check it using: http://lint.travis-ci.org/
+#
 
 language: python
 
@@ -11,43 +14,45 @@ python:
 
 # Perform regression test build against latest dependencies
 
-# Command to install Python dependencies
-install: pip install --use-mirrors -r requirements.txt
+before_install: 
+  # Install Python dependencies
+  - pip install --use-mirrors -r requirements.txt
 
-# Commands to install C library dependencies
+  # Install C library dependencies
 
-# sodium
-- git clone git://github.com/jedisct1/libsodium.git
-- cd libsodium
-- ./autogen.sh
-- ./configure
-- make check
-- sudo make install
-- sudo ldconfig
-- cd ..
+  # sodium
+  - git clone git://github.com/jedisct1/libsodium.git
+  - cd libsodium
+  - ./autogen.sh
+  - ./configure
+  - make check
+  - sudo make install
+  - sudo ldconfig
+  - cd ..
 
-# zmq
-- git clone git://github.com/zeromq/libzmq.git
-- cd libzmq
-- ./autogen.sh
-- ./configure && make check
-- sudo make install
-- sudo ldconfig
-- cd ..
+  # zmq
+  - git clone git://github.com/zeromq/libzmq.git
+  - cd libzmq
+  - ./autogen.sh
+  - ./configure && make check
+  - sudo make install
+  - sudo ldconfig
+  - cd ..
 
-# czmq
-- git clone git://github.com/zeromq/czmq.git
-- cd czmq
-- ./autogen.sh
-- ./configure && make check
-- sudo make install
-- sudo ldconfig
-- cd ..
+  # czmq
+  - git clone git://github.com/zeromq/czmq.git
+  - cd czmq
+  - ./autogen.sh
+  - ./configure && make check
+  - sudo make install
+  - sudo ldconfig
+  - cd ..
 
 
+install:
+  - python setup.py install
 
 # Test and install PYCZMQ
 script:
   - nosetests
-  - python setup.py install
 
