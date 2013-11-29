@@ -13,9 +13,9 @@ PORT_NBR = 9000
 
 def s_can_connect(server, client):
     global PORT_NBR
-    rc = zsocket.bind(server, "tcp://*:{}".format(PORT_NBR))
+    rc = zsocket.bind(server, "tcp://*:{0}".format(PORT_NBR))
     assert rc == PORT_NBR
-    rc = zsocket.connect(client, "tcp://127.0.0.1:{}".format(PORT_NBR))
+    rc = zsocket.connect(client, "tcp://127.0.0.1:{0}".format(PORT_NBR))
     assert rc == 0
 
     zstr.send(server, "Hello World")
@@ -24,9 +24,9 @@ def s_can_connect(server, client):
     success = zpoller.wait(poller, 100) == client
     del poller
 
-    rc = zsocket.unbind(server, "tcp://*:{}".format(PORT_NBR))
+    rc = zsocket.unbind(server, "tcp://*:{0}".format(PORT_NBR))
     assert rc != -1
-    rc = zsocket.disconnect(client, "tcp://127.0.0.1:{}".format(PORT_NBR))
+    rc = zsocket.disconnect(client, "tcp://127.0.0.1:{0}".format(PORT_NBR))
     assert rc != -1
     PORT_NBR += 1
     return success

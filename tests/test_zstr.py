@@ -14,7 +14,7 @@ def test_zstr():
 
     # Send ten strings, five strings with MORE flag and then END
     for i in range(0, 10):
-        rc = zstr.send(output_s, "this is string {}".format(i))
+        rc = zstr.send(output_s, "this is string {0}".format(i))
         assert(rc == 0)
     zstr.sendx(output_s, "This", "is", "almost", "the", "very", "END")
 
