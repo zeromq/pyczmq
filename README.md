@@ -1,7 +1,7 @@
 # Pyczmq
 Pyczmq is a Python wrapper around the CZMQ zeromq bindings.
 
-[![Build Status](https://travis-ci.org/claws/pyczmq.png?branch=master)](https://travis-ci.org/claws/pyczmq)
+[![Build Status](https://travis-ci.org/zeromq/pyczmq.png?branch=master)](https://travis-ci.org/zeromq/pyczmq)
 
 ## Overview
 
