@@ -31,17 +31,21 @@ def cdef(decl, returns_string=False, nullable=False):
         # this insanity inserts a formatted argspec string
         # into the function's docstring, so that sphinx
         # gets the right args instead of just the wrapper args
+        #
+        # Backward compatability with Python2.6 necessitates the use
+        # of indicies within the .format {} braces.
+        #
         args, varargs, varkw, defaults = inspect.getargspec(f)
         defaults = () if defaults is None else defaults
-        defaults = ["\"{}\"".format(a) if type(a) == str else a for a in defaults]
-        l = ["{}={}".format(arg, defaults[(idx+1)*-1])
+        defaults = ["\"{0}\"".format(a) if type(a) == str else a for a in defaults]
+        l = ["{0}={1}".format(arg, defaults[(idx+1)*-1])
              if len(defaults)-1 >= idx else
              arg for idx, arg in enumerate(reversed(list(args)))]
         if varargs:
             l.append('*' + varargs)
         if varkw:
             l.append('**' + varkw)
-        doc = "{}({})\n\nC: ``{}``\n\n{}".format(f.__name__, ', '.join(reversed(l)), decl, f.__doc__)
+        doc = "{0}({1})\n\nC: ``{2}``\n\n{3}".format(f.__name__, ', '.join(reversed(l)), decl, f.__doc__)
         inner_f.__doc__ = doc
         return inner_f
     return wrap

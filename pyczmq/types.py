@@ -156,10 +156,10 @@ class Socket(object):
         raise AttributeError(name)
 
     def __repr__(self):
-        return '<Socket {}>'.format(zsocket.type_str(self.sock))
+        return '<Socket {0}>'.format(zsocket.type_str(self.sock))
 
     def __str__(self):
-        return '{} socket'.format(zsocket.type_str(self.sock))
+        return '{0} socket'.format(zsocket.type_str(self.sock))
 
     def type(self):
         return zsocket.type_str(self.sock)

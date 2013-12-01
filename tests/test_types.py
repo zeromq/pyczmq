@@ -35,12 +35,12 @@ def test_socket():
     assert reader
     assert writer.type() == "PUSH"
     assert reader.type() == "PULL"
-    rc = writer.bind("tcp://{}:{}".format(interf, service))
+    rc = writer.bind("tcp://{0}:{1}".format(interf, service))
     assert rc == service
 
 
     # Check unbind
-    rc = writer.unbind("tcp://{}:{}".format(interf, service))
+    rc = writer.unbind("tcp://{0}:{1}".format(interf, service))
     assert rc == 0
 
     # In some cases and especially when running under Valgrind, doing
@@ -49,11 +49,11 @@ def test_socket():
     time.sleep(0.1)
 
     # Bind again
-    rc = writer.bind("tcp://{}:{}".format(interf, service))
+    rc = writer.bind("tcp://{0}:{1}".format(interf, service))
     assert rc == service
 
 
-    rc = reader.connect("tcp://{}:{}".format(domain, service))
+    rc = reader.connect("tcp://{0}:{1}".format(domain, service))
     assert rc == 0
     writer.send("HELLO")
     message = reader.recv()
@@ -61,12 +61,12 @@ def test_socket():
     assert message == "HELLO"
 
     # Test binding to ports
-    port = writer.bind("tcp://{}:*".format(interf))
+    port = writer.bind("tcp://{0}:*".format(interf))
     assert (port >= zsocket.DYNFROM and port <= zsocket.DYNTO)
 
     assert writer.poll(100) == False
 
-    rc = reader.connect("txp://{}:{}".format(domain, service))
+    rc = reader.connect("txp://{0}:{1}".format(domain, service))
     assert rc == -1
 
     # Test sending frames to socket
@@ -106,13 +106,13 @@ def test_frame():
     for i in range(0, 5):
         frame = Frame("Hello")
         rc = output_s.send_frame(frame, Frame.MORE)
-        assert rc == 0, "error sending frame rc={}, {}".format(rc, zmq.strerror(zmq.errno()))
+        assert rc == 0, "error sending frame rc={0}, {1}".format(rc, zmq.strerror(zmq.errno()))
 
     # Send same frame five times, test ZFRAME_REUSE
     frame = Frame("Hello")
     for i in range(0, 5):
         rc = output_s.send_frame(frame, Frame.MORE + Frame.REUSE)
-        assert rc == 0, "error sending reused frame rc={}, {}".format(rc, zmq.strerror(zmq.errno()))
+        assert rc == 0, "error sending reused frame rc={0}, {1}".format(rc, zmq.strerror(zmq.errno()))
 
     copy = frame.dup()
     assert frame == copy
@@ -192,7 +192,7 @@ def test_message():
 
     msg = Message()
     for i in range(0, 10):
-        rc = msg.append("Frame{}".format(i))
+        rc = msg.append("Frame{0}".format(i))
         assert rc == 0
 
     copy = msg.dup()
@@ -211,7 +211,7 @@ def test_message():
     assert msg.content_size() == 60
 
     for i in range(0, 10):
-        assert msg.next() == "Frame{}".format(i)
+        assert msg.next() == "Frame{0}".format(i)
     del msg
 
     #TODO: continue adding remaining class function tests

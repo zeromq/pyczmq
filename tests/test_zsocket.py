@@ -21,11 +21,11 @@ def test_zsocket():
     assert (reader)
     assert zsocket.type_str(writer) == "PUSH"
     assert zsocket.type_str(reader) == "PULL"
-    rc = zsocket.bind(writer, "tcp://{}:{}".format(interf, service))
+    rc = zsocket.bind(writer, "tcp://{0}:{1}".format(interf, service))
     assert rc == service
 
     # Check unbind
-    rc = zsocket.unbind(writer, "tcp://{}:{}".format(interf, service))
+    rc = zsocket.unbind(writer, "tcp://{0}:{1}".format(interf, service))
     assert rc == 0
 
     # In some cases and especially when running under Valgrind, doing
@@ -34,11 +34,11 @@ def test_zsocket():
     time.sleep(0.1)
 
     # Bind again
-    rc = zsocket.bind(writer, "tcp://{}:{}".format(interf, service))
+    rc = zsocket.bind(writer, "tcp://{0}:{1}".format(interf, service))
     assert rc == service
 
 
-    rc = zsocket.connect(reader, "tcp://{}:{}".format(domain, service))
+    rc = zsocket.connect(reader, "tcp://{0}:{1}".format(domain, service))
     assert rc == 0
     zstr.send(writer, "HELLO")
     message = zstr.recv(reader)
@@ -46,12 +46,12 @@ def test_zsocket():
     assert message == "HELLO"
 
     # Test binding to ports
-    port = zsocket.bind(writer, "tcp://{}:*".format(interf))
+    port = zsocket.bind(writer, "tcp://{0}:*".format(interf))
     assert (port >= zsocket.DYNFROM and port <= zsocket.DYNTO)
 
     assert zsocket.poll(writer, 100) == False
 
-    rc = zsocket.connect(reader, "txp://{}:{}".format(domain, service))
+    rc = zsocket.connect(reader, "txp://{0}:{1}".format(domain, service))
     assert rc == -1
 
     # Test sending frames to socket

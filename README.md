@@ -1,6 +1,7 @@
 # Pyczmq
 Pyczmq is a Python wrapper around the CZMQ zeromq bindings.
 
+[![Build Status](https://travis-ci.org/claws/pyczmq.png?branch=master)](https://travis-ci.org/claws/pyczmq)
 
 ## Overview
 
@@ -32,7 +33,7 @@ This option would typically be used by users and contributing developers who wan
 On Ubuntu you need the following packages (Other OSes may use a different package name) which are typicall installed using 'sudo apt-get install _package_':
 
     libffi-dev
-    python-dev 
+    python-dev
     python-virtualenv
 
 The following Python packages are required which are typically installed using 'sudo pip install _package_':
@@ -106,7 +107,7 @@ Functions also have aliases in a module level namespace interface, so:
 
   - pyczmq.C.zsocket_bind is pyczmq.zsocket.bind
 
-  - pyczmq.C.zstr_send is pyczmq.zstr.send 
+  - pyczmq.C.zstr_send is pyczmq.zstr.send
 
   - etc...
 
@@ -123,7 +124,7 @@ For example a simple PUSH/PULL socket pipeline::
     zsocket.poll(pull, 1)
     assert zstr.recv_nowait(pull) == 'foo'
 
-Some of the 'new' functions in the module namespaces (like pyczmq.zctx.new) are wrappers that plug into Python's garbage collector, so you typically never need to explicitly destroy objects if you use the namespace interface.  
+Some of the 'new' functions in the module namespaces (like pyczmq.zctx.new) are wrappers that plug into Python's garbage collector, so you typically never need to explicitly destroy objects if you use the namespace interface.
 
 Therefore, pyczmq.zctx.new isn't *really* pyczmq.C.zmq_new, but the effect is exactly the same.  If you use the "raw" C binding interface pyczmq.C.zctx_new, however, you must explicitly garbage collect your own resources by calling the coresponding destroy method (pyczmq.C.zctx_destroy, etc.).
 
