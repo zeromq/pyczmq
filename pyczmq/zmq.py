@@ -368,5 +368,5 @@ def z85_encode(dest, data, size):
 
 
 @cdef('uint8_t *zmq_z85_decode (uint8_t *dest, char *string);')
-def z86_decode(dest, string):
+def z85_decode(dest, string):
     return Z.zmq_z85_decode(dest, string)
