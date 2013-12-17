@@ -2,6 +2,7 @@ from ._cffi import C, ffi
 
 from . import (
     zmq,
+    zsys,
     zctx,
     zsocket,
     zstr,
