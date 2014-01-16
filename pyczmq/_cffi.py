@@ -1,4 +1,3 @@
-import os
 import inspect
 from functools import wraps
 from cffi import FFI
