@@ -2,7 +2,7 @@
 Replicates czmq test_zloop
 """
 
-from pyczmq import ffi, zmq, zctx, zsocket, zstr, zloop
+from pyczmq import zmq, zctx, zsocket, zstr, zloop
 
 
 def test_zloop(verbose=False):
