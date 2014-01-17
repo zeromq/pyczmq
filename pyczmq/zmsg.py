@@ -1,4 +1,4 @@
-from pyczmq._cffi import C, ffi, ptop, cdef
+from pyczmq._cffi import C, ptop, cdef
 
 __doc__ = """
 The zmsg class provides methods to send and receive multipart messages

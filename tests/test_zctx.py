@@ -2,7 +2,7 @@
 Replicates czmq test_zctx
 """
 
-from pyczmq import ffi, zctx, zmq, zsocket
+from pyczmq import zctx, zmq, zsocket
 
 def test_zctx():
 

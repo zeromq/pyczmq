@@ -3,7 +3,9 @@ Test high-level API
 """
 
 import time
-from pyczmq import ffi, zmq, Context, Loop, Frame, Message, zsocket
+from pyczmq._cffi import ffi
+from pyczmq import zmq, zsocket
+from pyczmq.types import Context, Loop, Frame, Message
 
 
 def test_context():
