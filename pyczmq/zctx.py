@@ -29,6 +29,29 @@ The zctx class has these main features:
 cdef('typedef struct _zctx_t zctx_t;')
 
 
+@cdef('zctx_t * zctx_shadow (zctx_t *self);')
+def shadow(ctx):
+    """
+    Create new shadow context, returns context object
+    """
+    return C.zctx_shadow(ctx)
+
+
+@cdef('zctx_t * zctx_shadow_zmq_ctx (void *zmqctx);')
+def shadow_zmq_ctx(zmqctx):
+    """
+    Create a new context by shadowing a plain zmq context
+    """
+    return C.zctx_shadow_zmq_ctx(zmqctx)
+
+
+def shadow_pyzmq_ctx(pyzmqctx):
+    """
+    Create a new context by shadowing a pyzmq context
+    """
+    return shadow_zmq_ctx(ffi.cast('void *', pyzmqctx._handle))
+
+
 @cdef('void zctx_destroy (zctx_t **self_p);')
 def destroy(ctx):
     """
