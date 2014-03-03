@@ -88,6 +88,14 @@ def type_str(sock):
     """Returns socket type as printable constant string"""
     return ffi.string(C.zsocket_type_str(sock))
 
+
+def from_pyzmq_socket(pyzmq_socket):
+    """
+    Get the underlying socket from a pyzmq Socket
+    """
+    return ffi.cast("void *", pyzmq_socket._handle)
+
+
 cdef('''
 
 /*  =========================================================================
