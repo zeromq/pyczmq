@@ -93,7 +93,7 @@ def from_pyzmq_socket(pyzmq_socket):
     """
     Get the underlying socket from a pyzmq Socket
     """
-    return ffi.cast("void *", pyzmq_socket._handle)
+    return ffi.cast("void *", pyzmq_socket.underlying)
 
 
 cdef('''

@@ -49,7 +49,8 @@ def shadow_pyzmq_ctx(pyzmqctx):
     """
     Create a new context by shadowing a pyzmq context
     """
-    return shadow_zmq_ctx(ffi.cast('void *', pyzmqctx._handle))
+    address = pyzmqctx.underlying
+    return shadow_zmq_ctx(ffi.cast('void *', address))
 
 
 @cdef('void zctx_destroy (zctx_t **self_p);')
