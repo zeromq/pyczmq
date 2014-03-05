@@ -89,7 +89,7 @@ def type_str(sock):
     return ffi.string(C.zsocket_type_str(sock))
 
 
-def from_pyzmq_socket(pyzmq_socket):
+def shadow_pyzmq_socket(pyzmq_socket):
     """
     Get the underlying socket from a pyzmq Socket
     """
