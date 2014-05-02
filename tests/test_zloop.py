@@ -43,7 +43,7 @@ def test_zloop(verbose=False):
     # When we get the ping message, end the reactor
     poll_input = zmq.pollitem(socket=input_s, events=zmq.POLLIN)
     zloop.poller(l, poll_input, on_socket_event, 3)
-    zloop.set_tolerant(l, poll_input)
+    zloop.poller_set_tolerant(l, poll_input)
     zloop.start(l)
 
     del l
