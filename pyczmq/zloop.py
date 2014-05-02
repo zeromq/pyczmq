@@ -74,13 +74,13 @@ def poller_end(loop, item):
     return C.zloop_poller_end(loop, item)
 
 
-@cdef('void zloop_set_tolerant (zloop_t *self, zmq_pollitem_t *item);')
-def set_tolerant(loop, item):
+@cdef('void zloop_poller_set_tolerant (zloop_t *self, zmq_pollitem_t *item);')
+def poller_set_tolerant(loop, item):
     """
     Configure a registered pollitem to ignore errors. If you do not set this,
     then pollitems that have errors are removed from the reactor silently.
     """
-    return C.zloop_set_tolerant(loop, item)
+    return C.zloop_poller_set_tolerant(loop, item)
 
 
 @cdef('int zloop_timer (zloop_t *self, size_t delay, size_t times, zloop_timer_fn handler, void *arg);')
