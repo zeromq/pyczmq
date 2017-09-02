@@ -6,17 +6,20 @@
 language: python
 
 python:
-  - "2.6"
   - "2.7"
-#  - "3.2"  # requires some additonal (str) work for compatibility
-#  - "3.3"  # requires some additonal (str) work for compatibility
-#  - "pypy" # investigate why ffi.from_handle is causing issues
+  - "3.6"  # requires some additonal (str) work for compatibility
+  - "pypy" # investigate why ffi.from_handle is causing issues
+
+matrix:
+  allow_failures:
+    - python: "3.6"
+    - python: "pypy"
 
 # Perform regression test build against latest dependencies
 
 before_install: 
   # Install Python dependencies
-  - pip install --use-mirrors -r requirements.txt
+  - pip install -r requirements.txt
 
   # Install C library dependencies
 
@@ -55,4 +58,3 @@ install:
 # Test and install PYCZMQ
 script:
   - nosetests
-
