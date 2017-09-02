@@ -6,11 +6,15 @@
 language: python
 
 python:
-  - "2.6"
+  - "2.6"  # can we drop Python 2.6??  https://docs.python.org/devguide/index.html#branchstatus
   - "2.7"
-#  - "3.2"  # requires some additonal (str) work for compatibility
-#  - "3.3"  # requires some additonal (str) work for compatibility
-#  - "pypy" # investigate why ffi.from_handle is causing issues
+  - "3.6"  # requires some additonal (str) work for compatibility
+  - "pypy" # investigate why ffi.from_handle is causing issues
+
+matrix:
+  allow_failures:
+    - python: "3.6"
+    - python: "pypy"
 
 # Perform regression test build against latest dependencies
 
