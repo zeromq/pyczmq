@@ -10,6 +10,11 @@ from pyczmq import (
     )
 from pyczmq._cffi import ffi
 
+try:
+    basestring        # Python 2
+except NameError:
+    basestring = str  # Python 3
+
 
 class Frame(object):
     """
