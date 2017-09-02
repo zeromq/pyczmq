@@ -113,9 +113,11 @@ Functions also have aliases in a module level namespace interface, so:
 
 For example a simple PUSH/PULL socket pipeline::
 
+    from pyzmq import zctx, zsocket, zstr, zmq
+
     ctx = zctx.new()
-    push = zsocket.new(ctx, zsocket.PUSH)
-    pull = zsocket.new(ctx, zsocket.PULL)
+    push = zsocket.new(ctx, zmq.PUSH)
+    pull = zsocket.new(ctx, zmq.PULL)
     zsocket.bind(push, 'inproc://test')
     zsocket.connect(pull, 'inproc://test')
     zstr.send(push, 'foo')
